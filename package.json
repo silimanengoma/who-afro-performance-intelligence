@@ -1,0 +1,24 @@
+{
+  "name": "sam1-platform-sprint1",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:client\"",
+    "dev:server": "pnpm --filter server dev",
+    "dev:client": "pnpm --filter client dev",
+    "migrate": "pnpm --filter server migrate",
+    "migrate:down": "pnpm --filter server migrate:down",
+    "test": "pnpm --filter server test",
+    "lint": "pnpm --filter server lint && pnpm --filter client lint",
+    "build": "pnpm --filter client build"
+  },
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

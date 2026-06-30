@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: sam1-api
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: corepack enable && corepack prepare pnpm@11.7.0 --activate && pnpm install --frozen-lockfile
+    preDeployCommand: pnpm --filter server deploy:migrate
+    startCommand: pnpm --filter server start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MAX_UPLOAD_MB
+        value: 25
+      - key: DB_SSL
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sam1-postgres
+          property: connectionString
+
+databases:
+  - name: sam1-postgres
+    plan: free
+    databaseName: sam1
+    user: sam1

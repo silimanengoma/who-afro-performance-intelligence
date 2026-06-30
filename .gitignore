@@ -1,0 +1,12 @@
+node_modules/
+dist/
+client/dist/
+coverage/
+.env
+server/.env
+client/.env
+.DS_Store
+Thumbs.db
+*.log
+.vercel/
+.netlify/
