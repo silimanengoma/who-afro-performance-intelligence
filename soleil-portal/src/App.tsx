@@ -31,6 +31,20 @@ import { Partnership } from './pages/buyer/Partnership'
 import { Documents } from './pages/buyer/Documents'
 import { OrganizationPage } from './pages/buyer/Organization'
 import { Support } from './pages/buyer/Support'
+import { AdminLayout } from './components/layout/AdminLayout'
+import { Overview } from './pages/admin/Overview'
+import { ProductsAdmin, ProductEdit } from './pages/admin/Products'
+import { PricesAdmin } from './pages/admin/Prices'
+import { TermsAdmin } from './pages/admin/Terms'
+import { AccessRequests } from './pages/admin/AccessRequests'
+import { Prospects, ProspectDetail } from './pages/admin/Prospects'
+import { QuotesAdmin, QuoteAdminDetail } from './pages/admin/QuotesAdmin'
+import { StatsAdmin } from './pages/admin/Stats'
+import { SettingsAdmin } from './pages/admin/Settings'
+import {
+  AuditAdmin, CapsulesAdmin, ContentsAdmin, DocumentsAdmin, MediaAdmin,
+  NotificationsAdmin, OrdersAdmin, SelectionsAdmin, UsersAdmin,
+} from './pages/admin/misc'
 
 export function App() {
   return (
@@ -58,6 +72,39 @@ export function App() {
           <Route path="documents" element={<Documents />} />
           <Route path="organisation" element={<OrganizationPage />} />
           <Route path="support" element={<Support />} />
+        </Route>
+        <Route
+          path="admin"
+          element={
+            <RequireRole roles={['sales_admin', 'content_admin', 'super_admin']}>
+              <AdminLayout />
+            </RequireRole>
+          }
+        >
+          <Route index element={<Overview />} />
+          <Route path="produits" element={<ProductsAdmin />} />
+          <Route path="produits/:id" element={<ProductEdit />} />
+          <Route path="collections" element={<CapsulesAdmin />} />
+          <Route path="capsules" element={<CapsulesAdmin />} />
+          <Route path="medias" element={<MediaAdmin />} />
+          <Route path="prix" element={<PricesAdmin />} />
+          <Route path="conditions" element={<TermsAdmin />} />
+          <Route path="demandes-acces" element={<AccessRequests />} />
+          <Route path="prospects" element={<Prospects />} />
+          <Route path="prospects/:id" element={<ProspectDetail />} />
+          <Route path="partenaires" element={<Prospects />} />
+          <Route path="selections" element={<SelectionsAdmin />} />
+          <Route path="devis" element={<QuotesAdmin />} />
+          <Route path="devis/:id" element={<QuoteAdminDetail />} />
+          <Route path="commandes" element={<OrdersAdmin />} />
+          <Route path="documents" element={<DocumentsAdmin />} />
+          <Route path="contrats" element={<DocumentsAdmin />} />
+          <Route path="contenus" element={<ContentsAdmin />} />
+          <Route path="utilisateurs" element={<UsersAdmin />} />
+          <Route path="statistiques" element={<StatsAdmin />} />
+          <Route path="parametres" element={<SettingsAdmin />} />
+          <Route path="audit" element={<AuditAdmin />} />
+          <Route path="notifications" element={<NotificationsAdmin />} />
         </Route>
         <Route element={<PublicLayout />}>
           <Route index element={<Home />} />

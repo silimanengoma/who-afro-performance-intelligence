@@ -1,7 +1,7 @@
 /* Fiche produit professionnelle : galerie multi-vues + zoom, variantes,
  * prix pro / PPC / marge, MOQ, délais, demandes d'échantillon et de
  * personnalisation. Toute donnée inconnue affiche « à confirmer ». */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useI18n } from '../../i18n'
 import { marginRate, marginValue, usePriceFor, useStore } from '../../data/store'
@@ -22,6 +22,14 @@ export function ProductDetail() {
 
   const product = db.products.find((p) => p.reference === ref && p.status === 'active')
   const price = usePriceFor(product?.id ?? '')
+
+  useEffect(() => {
+    if (!product) return
+    logActivity({ type: 'product_viewed', organizationId: org?.id ?? null, refId: product.id, detail: product.reference })
+    // une seule fois par ouverture de fiche
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id])
+
   if (!product) return <NotFound />
 
   const capsule = db.capsules.find((c) => c.id === product.capsuleId)
