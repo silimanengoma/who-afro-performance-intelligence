@@ -17,12 +17,48 @@ import { Forbidden, ErrorPage, Maintenance } from './pages/system/states'
 import { Expired } from './pages/system/Expired'
 import { NotFound } from './pages/system/NotFound'
 import { ScrollToTop } from './components/ScrollToTop'
+import { RequireRole } from './auth/guards'
+import { BuyerLayout } from './components/layout/BuyerLayout'
+import { BuyerDashboard } from './pages/buyer/Dashboard'
+import { Showroom } from './pages/buyer/Showroom'
+import { ProductDetail } from './pages/buyer/ProductDetail'
+import { Selection } from './pages/buyer/Selection'
+import { LineSheet } from './pages/buyer/LineSheet'
+import { QuoteNew } from './pages/buyer/QuoteNew'
+import { Quotes, QuoteDetail } from './pages/buyer/Quotes'
+import { Orders } from './pages/buyer/Orders'
+import { Partnership } from './pages/buyer/Partnership'
+import { Documents } from './pages/buyer/Documents'
+import { OrganizationPage } from './pages/buyer/Organization'
+import { Support } from './pages/buyer/Support'
 
 export function App() {
   return (
     <>
       <ScrollToTop />
       <Routes>
+        <Route
+          path="espace-pro"
+          element={
+            <RequireRole roles={['buyer']}>
+              <BuyerLayout />
+            </RequireRole>
+          }
+        >
+          <Route index element={<BuyerDashboard />} />
+          <Route path="showroom" element={<Showroom />} />
+          <Route path="produit/:ref" element={<ProductDetail />} />
+          <Route path="selection" element={<Selection />} />
+          <Route path="line-sheet" element={<LineSheet />} />
+          <Route path="devis/nouveau" element={<QuoteNew />} />
+          <Route path="devis" element={<Quotes />} />
+          <Route path="devis/:id" element={<QuoteDetail />} />
+          <Route path="commandes" element={<Orders />} />
+          <Route path="partenariat" element={<Partnership />} />
+          <Route path="documents" element={<Documents />} />
+          <Route path="organisation" element={<OrganizationPage />} />
+          <Route path="support" element={<Support />} />
+        </Route>
         <Route element={<PublicLayout />}>
           <Route index element={<Home />} />
           <Route path="maison" element={<Maison />} />
