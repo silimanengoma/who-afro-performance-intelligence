@@ -49,4 +49,4 @@ Livrables : les 8 documents `docs/`. Diagnostic Dropbox complet, curation v1, d�
 | 2 — Expérience publique | ✅ Livré |
 | 3 — Espace acheteur | ✅ Livré |
 | 4 — Espace administrateur | ✅ Livré |
-| 5 — Backend/guides/QA | À venir |
+| 5 — Backend/guides/QA | ✅ Livré |
