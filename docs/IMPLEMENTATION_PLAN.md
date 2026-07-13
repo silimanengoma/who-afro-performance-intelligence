@@ -45,8 +45,8 @@ Livrables : les 8 documents `docs/`. Diagnostic Dropbox complet, curation v1, d�
 | Sprint | Statut |
 |---|---|
 | 0 — Fondations documentaires | ✅ Livré |
-| 1 — Socle technique | ⏳ En cours |
-| 2 — Expérience publique | À venir |
+| 1 — Socle technique | ✅ Livré |
+| 2 — Expérience publique | ✅ Livré |
 | 3 — Espace acheteur | À venir |
 | 4 — Espace administrateur | À venir |
 | 5 — Backend/guides/QA | À venir |
