@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useI18n } from '../../i18n'
 import { uid, useStore } from '../../data/store'
 import { Button, FieldWrap, NextStep, SectionTitle, Select, TextArea, TextInput } from '../../components/ui'
+import { submitAppointmentRemote } from '../../data/supabase/hydrate'
 
 export function RendezVous() {
   const { t, lx } = useI18n()
@@ -27,6 +28,10 @@ export function RendezVous() {
       ],
     }))
     logActivity({ type: 'appointment_requested', organizationId: null, refId: id, detail: form.organization || form.name })
+    void submitAppointmentRemote({
+      name: form.name, organization: form.organization, email: form.email,
+      whatsapp: form.whatsapp, channel: form.channel, slots: form.slots, message: form.message,
+    })
     notify({
       audience: 'admin', organizationId: null, templateCode: 'appointment_requested',
       title: { fr: 'Nouvelle demande de rendez-vous', en: 'New appointment request' },

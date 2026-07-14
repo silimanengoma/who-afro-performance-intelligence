@@ -6,6 +6,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import * as seed from './seed'
+import { supabaseMode } from './supabase/client'
+import { hydrateCatalogue } from './supabase/hydrate'
 import type {
   AccessRequest, ActivityEvent, AdminTask, AppNotification, Appointment,
   AuditLog, BrandSettings, Capsule, CommunicationLog, Order, OrderStatus,
@@ -108,6 +110,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       // stockage plein ou indisponible : le mode démo continue en mémoire
     }
   }, [db])
+
+  // Mode Supabase (étape 1) : le catalogue réel remplace le seed au démarrage.
+  // Échec silencieux → l'application reste utilisable sur les données locales.
+  useEffect(() => {
+    if (!supabaseMode) return
+    hydrateCatalogue()
+      .then((cat) => {
+        if (!cat || cat.products.length === 0) return
+        setDb((prev) => ({
+          ...prev,
+          capsules: cat.capsules,
+          products: cat.products,
+          prices: cat.prices,
+          settings: { ...prev.settings, ...cat.settingsPatch },
+        }))
+      })
+      .catch((e) => console.warn('[supabase] hydratation :', e))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const value = useMemo<StoreValue>(() => {
     const update = (fn: (d: Database) => Database) => setDb((prev) => fn(prev))

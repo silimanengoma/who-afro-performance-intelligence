@@ -6,6 +6,7 @@ import { useI18n } from '../../i18n'
 import { uid, useStore } from '../../data/store'
 import { Button, FieldWrap, NextStep, SectionTitle, Select, TextArea, TextInput } from '../../components/ui'
 import { partnershipModels } from '../../content/partnership'
+import { submitAccessRequestRemote } from '../../data/supabase/hydrate'
 import type { PartnershipModelCode } from '../../data/types'
 
 const initial = {
@@ -50,6 +51,13 @@ export function AccesProfessionnel() {
       ],
     }))
     logActivity({ type: 'access_requested', organizationId: null, refId: id, detail: form.tradeName || form.legalName })
+    void submitAccessRequestRemote({
+      legal_name: form.legalName, trade_name: form.tradeName, shop_type: form.shopType,
+      contact_name: form.contactName, email: form.email, whatsapp: form.whatsapp,
+      city: form.city, country: form.country, website: form.website, instagram: form.instagram,
+      target_clientele: form.targetClientele, price_range: form.priceRange,
+      brands_carried: form.brandsCarried, preferred_model: model || null, message: form.message,
+    })
     notify({
       audience: 'admin', organizationId: null, templateCode: 'access_requested',
       title: { fr: "Nouvelle demande d'accès professionnel", en: 'New professional access request' },

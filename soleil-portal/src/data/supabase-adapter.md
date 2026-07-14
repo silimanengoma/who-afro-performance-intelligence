@@ -3,6 +3,19 @@
 Le prototype fonctionne en mode démonstration (`VITE_DATA_MODE=local`) : toutes
 les données vivent dans `localStorage`, structurées à l'identique du schéma SQL.
 
+## État d'avancement
+
+- ✅ **Étape 1 implémentée** (`src/data/supabase/`) : quand `VITE_DATA_MODE=supabase`,
+  le catalogue réel (capsules, produits, variantes, médias, prix, conditions,
+  réglages de marque) est hydraté depuis la base au démarrage, et les
+  formulaires publics (demande d'accès, rendez-vous) écrivent en base via les
+  RPC sécurisées `submit_access_request` / `submit_appointment`. En cas
+  d'indisponibilité, repli silencieux sur les données locales.
+  Activation : voir `supabase/SETUP.md`.
+- ⏳ **Étape 2 à implémenter** : auth Supabase (remplacement de l'auth démo),
+  écritures acheteur/admin (sélections, devis, commandes, CRM) — voir plan
+  ci-dessous.
+
 ## Étapes d'activation
 
 1. Créer un projet sur supabase.com et récupérer `URL` + `anon key`.
