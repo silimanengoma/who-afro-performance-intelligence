@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-nuit: #1b2237;
+  --color-nuit-700: #2a3350;
+  --color-nuit-900: #131828;
+  --color-ivoire: #f7f3ec;
+  --color-sable: #e3d5be;
+  --color-sable-100: #efe6d6;
+  --color-brun: #4a342a;
+  --color-or: #b8935c;
+  --color-or-500: #a07e45;
+  --color-encre: #23201b;
+  --color-succes: #3e6b4f;
+  --color-alerte: #9c6f1e;
+  --color-erreur: #8c3a2e;
+
+  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-ivoire text-encre font-sans antialiased;
+}
+
+h1, h2, h3, .font-editorial {
+  font-family: var(--font-serif);
+}
+
+.surtitre {
+  @apply text-xs uppercase tracking-[0.18em] text-or-500 font-sans;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-or);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Reveal discret des sections éditoriales */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.45s ease-out, transform 0.45s ease-out;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Impression : Line Sheet et documents */
+@media print {
+  .no-print { display: none !important; }
+  .print-page { break-after: page; }
+  body { background: white; }
+}

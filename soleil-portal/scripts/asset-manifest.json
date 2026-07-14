@@ -1,0 +1,300 @@
+{
+  "generated": "2026-07-13",
+  "note": "Correspondance exacte asset applicatif → fichier Dropbox source. Voir scripts/import-assets.md pour la procédure. Les emplacements absents affichent un placeholder identifié dans l’application.",
+  "corruptFiles": [
+    "/Perso/Soleil Creation/Foire 2024/Optimisées/Ensemble_Hommes_15.png (489 octets — à réexporter)"
+  ],
+  "duplicatesToIgnore": [
+    "/Perso/Soleil Creation/Foire 2024/Shooting/wetransfer_.../ (doublons FOND 49-74)",
+    "wetransfer_...zip (291 Mo)"
+  ],
+  "entries": [
+    {
+      "target": "public/assets/products/SC-H-003/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Ensemble_Hommes_3.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-H-003/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-H-005/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Ensemble_Hommes_5.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-H-005/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-H-008/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Ensemble_Hommes_8.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-H-008/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-H-011/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Ensemble_Hommes_11.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-H-011/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-H-017/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Ensemble_Hommes_17.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-H-017/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-H-024/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Ensemble_Hommes_24.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-H-024/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-H-028/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Ensemble_Hommes_28.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-H-028/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-F-001/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Femmes/Robes_1.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-F-001/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-F-004/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Femmes/Robes_4.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-F-004/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-F-007/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Femmes/Robes_7.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-F-007/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-F-012/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Femmes/Robes_12.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-F-012/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-F-016/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Femmes/Robes_16.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-F-016/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-F-020/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Femmes/Robes_20.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-F-020/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-B-001/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Boubou1.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-B-001/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-G-001/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Gilet_01.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-G-001/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/products/SC-T-002/packshot.png",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Optimisées/Haut_02.png",
+      "usage": "Packshot détouré (fiche produit, line sheet)",
+      "status": "placeholder",
+      "note": "Redimensionner à 1600px max, PNG ou WebP"
+    },
+    {
+      "target": "public/assets/products/SC-T-002/editorial-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Foire 2024/Shooting/ — photo portée à apparier (décision D2, voir docs/OPEN_DECISIONS.md)",
+      "usage": "Photo éditoriale portée (lookbook, galerie produit)",
+      "status": "placeholder",
+      "note": "JPEG qualité 80, 1600px max"
+    },
+    {
+      "target": "public/assets/brand/logo.png",
+      "dropboxPath": "/Perso/Soleil Creation/Logo Soleil Création.jpeg",
+      "usage": "[LOGO OFFICIEL]",
+      "status": "placeholder",
+      "note": ""
+    },
+    {
+      "target": "public/assets/brand/griffe.png",
+      "dropboxPath": "/Perso/Soleil Creation/Griffe SOLEIL CREATION.jpeg",
+      "usage": "Griffe / filigrane",
+      "status": "placeholder",
+      "note": ""
+    },
+    {
+      "target": "public/assets/brand/banner.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Communication/Bannière actualisée.png",
+      "usage": "Couverture lookbook (option)",
+      "status": "placeholder",
+      "note": ""
+    },
+    {
+      "target": "public/assets/maison/shop-plateau-1.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Shop Plateau/Images/Après/ (6 photos WhatsApp du 2025-10-24, 12:58)",
+      "usage": "Section La Maison — boutique",
+      "status": "placeholder",
+      "note": "1600px max"
+    },
+    {
+      "target": "public/assets/maison/shop-plateau-2.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Shop Plateau/Images/Après/ (6 photos WhatsApp du 2025-10-24, 12:58)",
+      "usage": "Section La Maison — boutique",
+      "status": "placeholder",
+      "note": "1600px max"
+    },
+    {
+      "target": "public/assets/maison/shop-plateau-3.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Shop Plateau/Images/Après/ (6 photos WhatsApp du 2025-10-24, 12:58)",
+      "usage": "Section La Maison — boutique",
+      "status": "placeholder",
+      "note": "1600px max"
+    },
+    {
+      "target": "public/assets/maison/shop-plateau-4.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Shop Plateau/Images/Après/ (6 photos WhatsApp du 2025-10-24, 12:58)",
+      "usage": "Section La Maison — boutique",
+      "status": "placeholder",
+      "note": "1600px max"
+    },
+    {
+      "target": "public/assets/maison/shop-plateau-5.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Shop Plateau/Images/Après/ (6 photos WhatsApp du 2025-10-24, 12:58)",
+      "usage": "Section La Maison — boutique",
+      "status": "placeholder",
+      "note": "1600px max"
+    },
+    {
+      "target": "public/assets/maison/shop-plateau-6.jpg",
+      "dropboxPath": "/Perso/Soleil Creation/Shop Plateau/Images/Après/ (6 photos WhatsApp du 2025-10-24, 12:58)",
+      "usage": "Section La Maison — boutique",
+      "status": "placeholder",
+      "note": "1600px max"
+    }
+  ]
+}
