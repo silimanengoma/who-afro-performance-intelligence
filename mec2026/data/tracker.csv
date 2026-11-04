@@ -3,55 +3,48 @@ cn,CN,"Concept note, version 3",Core document,Whole meeting,MSC,DPM,2026-10-16,I
 tor,ToR,TWG terms of reference,Core document,Whole meeting,MSC,DPM,2026-10-16,In review,,,Version of 13 October 2026. Dates to be updated to 19–20 November.,2026-11-03
 brief,Brief,Executive brief for the Regional Director,Core document,Whole meeting,MSC,DPM,2026-10-16,In review,,,Two-page brief of 13 October 2026. Dates to be updated to 19–20 November.,2026-11-03
 mec-01,MEC-01,"Agenda, programme and decision rules",Paper,D1 Open,WS6,,2026-11-17,,,,,
-mec-02,MEC-02,Status of previous MEC and RPM recommendations,Paper,D1 S1,WS4,,2026-11-17,,,,,
-mec-03,MEC-03,"PB 2026–2027 implementation report, 53 budget centres",Paper,D1 S2,WS1,,2026-11-17,,,,,
-mec-04,MEC-04,Strategic alignment analysis,Paper,D1 S3,WS2,,2026-11-17,,,,,
-prof-47,Profiles,47 country alignment profiles,Country profiles,D1 S3,WS2,,2026-11-16,,,,,
+mec-03,MEC-03,"PB 2026–2027 implementation report, 53 budget centres",Paper,D1 S1,WS1,,2026-11-17,,,,,
+mec-04,MEC-04,Strategic alignment analysis,Paper,D1 S2,WS2,,2026-11-17,,,,,
+prof-47,Profiles,47 country alignment profiles,Country profiles,D1 S2,WS2,,2026-11-16,,,,,
 mec-05,MEC-05,Regional Office support to Country Offices,Paper,D1 S4,WS4,,2026-11-17,,,,,
-mec-06,MEC-06,Innovations and lessons learned catalogue,Paper,D1 S5,WS3,,2026-11-17,,,,,
-mec-07,MEC-07,"Challenges, decisions and 2027 delivery risk",Paper,D1 S6,WS4,,2026-11-17,,,,,
-mec-08,MEC-08,MEAL Framework implementation status,Paper,D2 Recap,WS5,,2026-11-17,,,,,
-mec-09,MEC-09,MEAL implementation policies: the seven policies,Paper,"D2 A, B, C",WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_MEAL_implementation_policies.pdf | MEC2026_MEC-09_MEAL_implementation_policies.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
-br-p1,MEC-09 · P1,Policy brief: Minimum MEAL Package and maturity baseline,Policy brief,D2 A,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P1_Minimum_MEAL_Package.pdf | MEC2026_MEC-09_P1_Minimum_MEAL_Package.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
-br-p2,MEC-09 · P2,Policy brief: Performance evidence standard,Policy brief,D2 A,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P2_Performance_evidence_standard.pdf | MEC2026_MEC-09_P2_Performance_evidence_standard.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
-br-p3,MEC-09 · P3,Policy brief: MEAL financing gateway of 3%,Policy brief,D2 B,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P3_MEAL_financing_gateway.pdf | MEC2026_MEC-09_P3_MEAL_financing_gateway.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
-br-p4,MEC-09 · P4,Policy brief: MEAL function and competencies,Policy brief,D2 B,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P4_MEAL_function_and_competencies.pdf | MEC2026_MEC-09_P4_MEAL_function_and_competencies.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
-br-p5,MEC-09 · P5,Policy brief: Country-led evaluation and management response,Policy brief,D2 C,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P5_Evaluation_and_management_response.pdf | MEC2026_MEC-09_P5_Evaluation_and_management_response.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
-br-p6,MEC-09 · P6,Policy brief: Decision follow-up and Regional Office support standard,Policy brief,D2 C,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P6_Decision_follow_up_and_RO_support.pdf | MEC2026_MEC-09_P6_Decision_follow_up_and_RO_support.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
-br-p7,MEC-09 · P7,Policy brief: Burden- and equity-informed operational planning,Policy brief,D2 C,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P7_Burden_and_equity_informed_planning.pdf | MEC2026_MEC-09_P7_Burden_and_equity_informed_planning.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
+mec-06,MEC-06,Solutions identified by budget centres,Paper,D1 S3,WS3,,2026-11-17,,,,,
+mec-07,MEC-07,"Bottlenecks, corrective decisions and 2027 delivery risk",Paper,D1 S3,WS4,,2026-11-17,,,,,
+mec-08,MEC-08,MEAL Framework implementation status,Paper,"D2 S1, D2 S2",WS5,,2026-11-17,,,,,
+mec-09,MEC-09,MEAL implementation policies: the seven policies,Paper,D2 S3,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_MEAL_implementation_policies.pdf | MEC2026_MEC-09_MEAL_implementation_policies.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
+br-p1,MEC-09 · P1,Policy brief: Minimum MEAL Package and maturity baseline,Policy brief,D2 S3,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P1_Minimum_MEAL_Package.pdf | MEC2026_MEC-09_P1_Minimum_MEAL_Package.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
+br-p2,MEC-09 · P2,Policy brief: Performance evidence standard,Policy brief,D2 S3,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P2_Performance_evidence_standard.pdf | MEC2026_MEC-09_P2_Performance_evidence_standard.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
+br-p3,MEC-09 · P3,Policy brief: MEAL financing gateway of 3%,Policy brief,D2 S3,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P3_MEAL_financing_gateway.pdf | MEC2026_MEC-09_P3_MEAL_financing_gateway.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
+br-p4,MEC-09 · P4,Policy brief: MEAL function and competencies,Policy brief,D2 S3,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P4_MEAL_function_and_competencies.pdf | MEC2026_MEC-09_P4_MEAL_function_and_competencies.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
+br-p5,MEC-09 · P5,Policy brief: Country-led evaluation and management response,Policy brief,D2 S3,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P5_Evaluation_and_management_response.pdf | MEC2026_MEC-09_P5_Evaluation_and_management_response.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
+br-p6,MEC-09 · P6,Policy brief: Decision follow-up and Regional Office support standard,Policy brief,D2 S3,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P6_Decision_follow_up_and_RO_support.pdf | MEC2026_MEC-09_P6_Decision_follow_up_and_RO_support.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
+br-p7,MEC-09 · P7,Policy brief: Burden- and equity-informed operational planning,Policy brief,D2 S3,WS5,DPM,2026-11-17,Drafting,MEC2026_MEC-09_P7_Burden_and_equity_informed_planning.pdf | MEC2026_MEC-09_P7_Burden_and_equity_informed_planning.docx,,"Draft of 4 November 2026 for TWG review, drafted from the Performance Intelligence Operating System (Draft 6.0, Annexes A to G). Parameters not set by the Framework are proposals, shown in the decision options.",2026-11-04
 mec-10,MEC-10,Costed MEAL implementation roadmap 2027,Paper,D2 Close,WS5,,2026-11-17,,,,,
-mec-11,MEC-11,Decision record and outcome statement,Paper,"D1 S7, D2 Close",WS6,,2026-11-17,,,,,
-d-1,D-1,Dashboard: PB 2026–2027 implementation,Dashboard,D1 S2,"WS1, WS6",,2026-11-17,,,,,
-d-2,D-2,Dashboard: alignment explorer,Dashboard,D1 S3,"WS2, WS6",,2026-11-17,,,,,
-d-3,D-3,"Dashboard: decisions, support and recommendations",Dashboard,"D1 S1, D1 S4, D1 S6","WS4, WS6",,2026-11-17,,,,,
-d-4,D-4,Dashboard: MEAL financing and maturity,Dashboard,"D2 Recap, D2 A, D2 B","WS5, WS6",,2026-11-17,,,,,
-pl-s1,Plan S1,Session plan: Did we do what we said?,Session plan,D1 S1,WS4,,2026-11-13,,,,,
-pl-s2,Plan S2,Session plan: Where are we on delivery?,Session plan,D1 S2,WS1,,2026-11-13,In review,MEC2026_D1_S2_Session_Plan.pdf | MEC2026_D1_S2_Session_Plan.docx,,Draft of 3 November 2026 for TWG review. Status-band thresholds to be confirmed by DPM; discussants to be named by 9 November.,2026-11-03
-pl-s3,Plan S3,Session plan: Are we working on the right priorities?,Session plan,D1 S3,WS2,,2026-11-13,,,,,
-pl-s4,Plan S4,Session plan: Is Regional Office support reaching Country Offices?,Session plan,D1 S4,WS4,,2026-11-13,,,,,
-pl-s5,Plan S5,Session plan: What is working that others can use?,Session plan,D1 S5,WS3,,2026-11-13,,,,,
-pl-s6,Plan S6,"Session plan: What is holding us back, and what will we change?",Session plan,D1 S6,WS4,,2026-11-13,,,,,
-pl-s7,Plan S7,Session plan: Day 1 decisions,Session plan,D1 S7,WS6,,2026-11-13,,,,,
-pl-d2,Plan D2,Day 2 facilitation plan: policy adoption,Session plan,"D2 Recap, D2 A, D2 B, D2 C",WS5,,2026-11-13,,,,,
-nt-s1,Note S1,Participant note: Did we do what we said?,Participant note,D1 S1,WS4,,2026-11-17,,,,,
-nt-s2,Note S2,Participant note: Where are we on delivery?,Participant note,D1 S2,WS1,,2026-11-17,Drafting,MEC2026_D1_S2_Participant_Note.pdf | MEC2026_D1_S2_Participant_Note.docx,,"Budget, expenditure and results figures to be added from MEC-03 before circulation on 17 November.",2026-11-03
-nt-s3,Note S3,Participant note: Are we working on the right priorities?,Participant note,D1 S3,WS2,,2026-11-17,,,,,
-nt-s4,Note S4,Participant note: Is Regional Office support reaching Country Offices?,Participant note,D1 S4,WS4,,2026-11-17,,,,,
-nt-s5,Note S5,Participant note: What is working that others can use?,Participant note,D1 S5,WS3,,2026-11-17,,,,,
-nt-s6,Note S6,"Participant note: What is holding us back, and what will we change?",Participant note,D1 S6,WS4,,2026-11-17,,,,,
-sl-open,Slides,Presentation: Opening,Slides,D1 Open,WS6,,2026-11-18,,,,,
-sl-s1,Slides,Presentation: Did we do what we said?,Slides,D1 S1,WS4,,2026-11-18,,,,,
-sl-s2,Slides,Presentation: Where are we on delivery?,Slides,D1 S2,WS1,,2026-11-18,,,,,
-sl-s3,Slides,Presentation: Are we working on the right priorities?,Slides,D1 S3,WS2,,2026-11-18,,,,,
-sl-s4,Slides,Presentation: Is Regional Office support reaching Country Offices?,Slides,D1 S4,WS4,,2026-11-18,,,,,
-sl-s6,Slides,"Presentation: What is holding us back, and what will we change?",Slides,D1 S6,WS4,,2026-11-18,,,,,
-sl-recap,Slides,Presentation: Recap and MEAL Framework status,Slides,D2 Recap,WS5,,2026-11-18,,,,,
-sl-d2a,Slides,Presentation: Block A. Know where we stand,Slides,D2 A,WS5,,2026-11-18,,,,,
-sl-d2b,Slides,Presentation: Block B. Fund and staff MEAL,Slides,D2 B,WS5,,2026-11-18,,,,,
-sl-d2c,Slides,Presentation: Block C. Use evidence for decisions,Slides,D2 C,WS5,,2026-11-18,,,,,
-sl-close,Slides,Presentation: Adoption and closing,Slides,D2 Close,WS6,,2026-11-18,,,,,
+mec-11,MEC-11,Decision record and outcome statement,Paper,"D1 S5, D2 Confirm",WS6,,2026-11-17,,,,,
+d-1,D-1,Dashboard: PB 2026–2027 implementation,Dashboard,D1 S1,"WS1, WS6",,2026-11-17,,,,,
+d-2,D-2,Dashboard: alignment explorer,Dashboard,D1 S2,"WS2, WS6",,2026-11-17,,,,,
+d-3,D-3,Dashboard: decisions and support,Dashboard,"D1 S3, D1 S4","WS4, WS6",,2026-11-17,,,,,
+d-4,D-4,Dashboard: MEAL financing and maturity,Dashboard,"D2 S1, D2 S2","WS5, WS6",,2026-11-17,,,,,
+pl-s1,Plan S1,Session plan: Implementation status of PB 2026–2027 in the 53 budget centres,Session plan,D1 S1,WS1,,2026-11-13,In review,MEC2026_D1_S2_Session_Plan.pdf | MEC2026_D1_S2_Session_Plan.docx,,"Draft of 3 November 2026 for TWG review. Status-band thresholds to be confirmed by DPM; discussants to be named by 9 November. To be revised to the agenda of 4 November: now Session 1, 09:30–11:00, with three lenses (budget, delivery, staffing).",2026-11-04
+pl-s2,Plan S2,Session plan: Alignment of resources and interventions with national priorities,Session plan,D1 S2,WS2,,2026-11-13,,,,,
+pl-s3,Plan S3,Session plan: Bottlenecks in the implementation of PB 2026–2027 and corrective decisions,Session plan,D1 S3,WS4,,2026-11-13,,,,,
+pl-s4,Plan S4,Session plan: Regional Office support delivery and priorities for 2027,Session plan,D1 S4,WS4,,2026-11-13,,,,,
+pl-s5,Plan S5,Session plan: Day 1 decisions and accountability,Session plan,D1 S5,WS6,,2026-11-13,,,,,
+pl-d2,Plan D2,"Day 2 facilitation plan: Framework, maturity assessment and policy decisions",Session plan,"D2 S1, D2 S2, D2 S3, D2 Confirm",WS5,,2026-11-13,,,,,
+nt-s1,Note S1,Participant note: Implementation status of PB 2026–2027 in the 53 budget centres,Participant note,D1 S1,WS1,,2026-11-17,Drafting,MEC2026_D1_S2_Participant_Note.pdf | MEC2026_D1_S2_Participant_Note.docx,,"Budget, expenditure and results figures to be added from MEC-03 before circulation on 17 November. To be revised to the agenda of 4 November: now Session 1, 09:30–11:00, with three lenses (budget, delivery, staffing).",2026-11-04
+nt-s2,Note S2,Participant note: Alignment of resources and interventions with national priorities,Participant note,D1 S2,WS2,,2026-11-17,,,,,
+nt-s3,Note S3,Participant note: Bottlenecks in the implementation of PB 2026–2027 and corrective decisions,Participant note,D1 S3,WS4,,2026-11-17,,,,,
+nt-s4,Note S4,Participant note: Regional Office support delivery and priorities for 2027,Participant note,D1 S4,WS4,,2026-11-17,,,,,
+sl-open,Slides,Presentation: Opening and framing,Slides,D1 Open,WS6,,2026-11-18,,,,,
+sl-s1,Slides,Presentation: Implementation status of PB 2026–2027 in the 53 budget centres,Slides,D1 S1,WS1,,2026-11-18,,,,,
+sl-s2,Slides,Presentation: Alignment of resources and interventions with national priorities,Slides,D1 S2,WS2,,2026-11-18,,,,,
+sl-s3,Slides,Presentation: Bottlenecks in the implementation of PB 2026–2027 and corrective decisions,Slides,D1 S3,WS4,,2026-11-18,,,,,
+sl-s4,Slides,Presentation: Regional Office support delivery and priorities for 2027,Slides,D1 S4,WS4,,2026-11-18,,,,,
+sl-recap,Slides,Presentation: Recap of Day 1,Slides,D2 Recap,WS5,,2026-11-18,,,,,
+sl-d2s1,Slides,Presentation: The WHO AFRO MEAL Framework,Slides,D2 S1,WS5,,2026-11-18,,,,,
+sl-d2s2,Slides,Presentation: MEAL system maturity assessment: Country Office experiences,Slides,D2 S2,WS5,,2026-11-18,,,,,
+sl-d2s3,Slides,Presentation: MEAL policies,Slides,D2 S3,WS5,,2026-11-18,,,,,
+sl-close,Slides,Presentation: Closing,Slides,D2 Close,WS6,,2026-11-18,,,,,
 svy-ro,Survey,WR survey on Regional Office support,Data,D1 S4,WS4,,2026-10-30,,,,,
-vid-s5,Videos,Marketplace videos,Video,D1 S5,WS3,,2026-11-18,,,,,
 dr-01,DR-01,Approved PB 2026–2027 budget and allocations by budget centre and outcome,Data request,TWG,Planning and budget,,2026-10-23,,,,,
 dr-02,DR-02,"Workplans 2026–2027, all budget centres and plans, by P/S: planned cost, funded amount, funding type",Data request,TWG,Planning and budget,,2026-10-23,,,,,
 dr-03,DR-03,Expenditure by budget centre and P/S,Data request,TWG,Finance,,2026-10-23,,,,,
@@ -61,7 +54,7 @@ dr-06,DR-06,SAM1 decision log and Learning Hub,Data request,TWG,MSC,,2026-10-19,
 dr-07,DR-07,"Workforce plans and staff funding coverage, aggregated",Data request,TWG,Human resources,,2026-10-23,,,,,
 dr-08,DR-08,Emergency and polio plans not selected in SAM1,Data request,TWG,Emergency programme; polio,,2026-10-23,,,,,
 dr-09,DR-09,"Records of Regional Office support to Country Offices, January–October 2026",Data request,TWG,Cluster directors; DPM office,,2026-10-23,,,,,
-dr-10,DR-10,Status of previous MEC and RPM recommendations,Data request,TWG,DPM office; MSC,,2026-10-23,,,,,
+dr-10,DR-10,Status of previous MEC and RPM recommendations,Data request,TWG,DPM office; MSC,,2026-10-23,,,,No longer needed: the session on previous MEC and RPM recommendations was removed from the agenda on 4 November.,2026-11-04
 dr-11,DR-11,Burden of disease: IHME GBD 2023 and WHO estimates,Data request,TWG,"MSC with data, analytics and knowledge management",,2026-10-23,Partly received,,,IHME GBD 2023 extract held for 45 of 47 countries; two to add.,2026-11-03
 dr-12,DR-12,Reports of the four Performance Intelligence pilots,Data request,TWG,MSC,,2026-10-23,,,,,
 dr-13,DR-13,WR survey on Regional Office support,Data request,TWG,MSC; WRs,,2026-10-30,,,,,
