@@ -302,6 +302,15 @@ tr.opt-rec td{background:var(--teal-bg)}
 @media (max-width:640px){.ev .brow,.ev .brow.wide{grid-template-columns:1fr}.ev .facts.f3{grid-template-columns:1fr}}
 @media (max-width:420px){.ev .grid.g4{grid-template-columns:1fr}}
 /*EV-END*/
+/*UPL-START*/
+.upl-pill{text-decoration:none;font-weight:600;background:var(--teal);border-color:var(--teal);color:#fff}
+.upl-pill:hover{filter:brightness(1.08)}
+.upl-steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:18px;max-width:760px}
+.upl-steps li::marker{font:700 16px var(--f-display);color:var(--teal)}
+.upl-steps li>.h3{margin-bottom:8px}
+.upl-steps select{max-width:100%;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:7px 10px}
+.upl-code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-weight:600}
+/*UPL-END*/
 [hidden]{display:none!important}
 html,body{margin:0}
 </style>
@@ -317,6 +326,7 @@ html,body{margin:0}
     <div class="meta">
       <span class="pill">19–20 November 2026 · Djoué, Brazzaville and online</span>
       <span class="pill count" id="countPill">MEC in <b id="countDays">–</b> days</span>
+      <a class="pill upl-pill" href="#upload">Upload a document</a>
       <span class="who" id="whoLine">Loading statuses…</span>
     </div>
   </div>
@@ -337,6 +347,7 @@ html,body{margin:0}
     <span class="group">Work</span>
     <a href="#twg" data-v="twg"><span class="k">05</span>TWG and timeline</a>
     <a href="#decisions" data-v="decisions"><span class="k">06</span>Decision record</a>
+    <a href="#upload" data-v="upload"><span class="k">07</span>Upload a document</a>
   </nav>
   <main><div class="wrap" id="view"></div></main>
 </div>
@@ -503,7 +514,7 @@ let toastT;function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=fa
 const STATE={items:{},decisions:[],dbReady:false,dbNote:"",canWrite:null,uid:null,names:{}};
 
 /* ---------------------------------------------------------------- views */
-const VIEWS={overview,programme:()=>programme(0),"day-1":()=>programme(1),"day-2":()=>programme(2),documents,policies,data:dataView,twg,decisions};
+const VIEWS={overview,programme:()=>programme(0),"day-1":()=>programme(1),"day-2":()=>programme(2),documents,policies,data:dataView,twg,decisions,upload:uploadView};
 let docFilter={q:"",type:"",day:"",status:""};
 
 function route(){
@@ -664,6 +675,7 @@ function documents(){
   const v=$("#view");
   v.append(h("section",{class:"sec"},h("span",{class:"kicker",text:"Library"}),h("h1",{class:"h1",text:"Documents and materials"}),
     h("p",{class:"lede",text:"Every paper, dashboard, session plan, participant note and presentation, with its owner, due date and review status. Select a row to open or download its files. To post a new version, send it to the TWG secretariat (MSC)."})));
+  if(typeof uploadCallout==="function")v.append(uploadCallout());
   const q=h("input",{id:"fq",type:"search",placeholder:"Search title or reference",value:docFilter.q,"aria-label":"Search documents",oninput:e=>{docFilter.q=e.target.value;draw();}});
   const sel=(id,label,opts,key)=>{const s=h("select",{id,"aria-label":label,onchange:e=>{docFilter[key]=e.target.value;draw();}},h("option",{value:"",text:label}),opts.map(o=>h("option",{value:o[0],text:o[1]})));s.value=docFilter[key];return s;};
   const f=h("div",{class:"filters"},q,
@@ -1135,6 +1147,50 @@ function evS7(){
 const EVF={"d1-open":evOpen,"d1-s1":evS1,"d1-s2":evS2,"d1-s3":evS3,"d1-s4":evS4,"d1-s5":evS5,"d1-s6":evS6,"d1-s7":evS7};
 function sessionEvidence(s,v){const f=EVF[s.id];if(f)v.append(f());}
 /*EV-END*/
+/*UPL-START*/
+/* -------------------------------------------------------------- upload
+   Uploads go through a WHO OneDrive "Request files" link (any file type, WHO sign-in).
+   MSC then posts the file on the hub and updates its status. Set the link in upload.json. */
+const UPLOAD = {"url": "", "contact": "TWG secretariat (MSC)"};
+const fileStem = it => it.code.replace(/\s*·\s*/g,"-").replace(/\s+/g,"-");
+let UPL_SEL = "";
+function uploadButton(cls){
+  return UPLOAD.url
+    ? h("a",{class:"btn primary "+(cls||""),href:UPLOAD.url,target:"_blank",rel:"noopener noreferrer"},"Open the upload page")
+    : h("button",{class:"btn "+(cls||""),type:"button",disabled:true},"Upload link being set up");
+}
+function uploadCallout(){
+  return h("div",{class:"callout blue upl-call"},
+    h("div",{class:"row",style:"justify-content:space-between;gap:10px;flex-wrap:wrap"},
+      h("p",{class:"small",style:"margin:0"},h("b",{text:"Have a document for the MEC? "}),"Upload it in any format: PDF, Word, PowerPoint, Excel or video."),
+      h("a",{class:"btn primary",href:"#upload"},"Upload a document")));
+}
+function uploadView(){
+  const v=$("#view");
+  v.append(h("section",{class:"sec"},h("span",{class:"kicker",text:"Contribute"}),h("h1",{class:"h1",text:"Upload a document"}),
+    h("p",{class:"lede",text:"Send a paper, presentation, spreadsheet, dashboard extract or video for the MEC. Any file type is accepted: PDF, Word, PowerPoint, Excel or video."})));
+  const list=I.slice().sort((a,b)=>a.code.localeCompare(b.code));
+  const out=h("div",{class:"sec",style:"gap:6px"});
+  const sel=h("select",{"aria-label":"Document",onchange:e=>{UPL_SEL=e.target.value;draw();}},h("option",{value:"",text:"Choose the document you are sending"}),list.map(it=>h("option",{value:it.id,text:it.code+" · "+it.title})));
+  sel.value=UPL_SEL;
+  function draw(){
+    out.replaceChildren();const it=ITEM[UPL_SEL];
+    if(!it){out.append(h("p",{class:"small muted",text:"Pick the document so the file can be filed in the right place."}));return;}
+    const r=STATE.items[it.id]||{};
+    out.append(h("p",null,"Start the file name with ",h("code",{class:"mono upl-code",text:fileStem(it)+"_"}),", for example ",h("span",{class:"mono small",text:fileStem(it)+"_v2.pptx"}),"."),
+      h("p",{class:"small muted",text:"Due "+fmtDate(it.due)+" "+(it.due||"").slice(0,4)+" · Owner: "+(r.owner||it.ws)+" · Status: "+stLabel(it,stOf(it.id))}));
+  }
+  draw();
+  v.append(h("ol",{class:"upl-steps"},
+    h("li",null,h("h3",{class:"h3",text:"Name the file"}),h("div",{class:"sec",style:"gap:8px"},sel,out)),
+    h("li",null,h("h3",{class:"h3",text:"Upload it"}),
+      h("p",{class:"small",text:UPLOAD.url?"The upload page opens in a new tab. Sign in with your WHO account, add the file and confirm. You will not see files uploaded by others.":"The upload link is being set up. Until it is ready, email the file to the "+UPLOAD.contact+"."}),
+      uploadButton()),
+    h("li",null,h("h3",{class:"h3",text:"MSC posts it on the hub"}),
+      h("p",{class:"small",text:"The "+UPLOAD.contact+" checks the file, posts it against the document within one working day and updates its status. A newer version replaces the older one."}))));
+  v.append(h("div",{class:"callout amber"},h("p",{class:"small"},h("b",{text:"Before you upload: "}),"the hub can be opened by anyone with its link. If a document must stay internal, say so in the upload note: MSC will record its status on the hub without posting the file.")));
+}
+/*UPL-END*/
 /* --------------------------------------------------------- decisions */
 function decisionTable(list){
   const tb=h("tbody");
@@ -1192,7 +1248,7 @@ function renderDrawer(){
     h("p",{class:"small",text:"Owner: "+(r.owner||it.ws)+(r.reviewer?" · Reviewer: "+r.reviewer:"")}),
     r.note?h("p",{class:"small",text:r.note}):null,
     r.updated?h("p",{class:"small muted",text:"Status recorded on "+fmtDate(r.updated)+" "+r.updated.slice(0,4)}):null));
-  body.append(h("div",{class:"callout amber"},h("p",{class:"small"},"To post a new version or change this status, send it to the "+CONFIG.contact+".",
+  body.append(h("div",{class:"callout amber"},h("p",{class:"small"},"New version of this document? ",h("a",{href:"#upload",onclick:closeDrawer,text:"Upload a document"}),", starting the file name with ",h("span",{class:"mono",text:fileStem(it)+"_"}),". To change the status, write to the "+CONFIG.contact+".",
     CONFIG.updateFormUrl?h("span",null," ",h("a",{href:CONFIG.updateFormUrl,target:"_blank",rel:"noopener",text:"Use the update form"}),"."):null)));
   d.append(body);
 }
