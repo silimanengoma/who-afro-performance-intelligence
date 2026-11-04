@@ -1151,7 +1151,7 @@ function sessionEvidence(s,v){const f=EVF[s.id];if(f)v.append(f());}
 /* -------------------------------------------------------------- upload
    Uploads go through a WHO OneDrive "Request files" link (any file type, WHO sign-in).
    MSC then posts the file on the hub and updates its status. Set the link in upload.json. */
-const UPLOAD = {"url": "", "contact": "TWG secretariat (MSC)"};
+const UPLOAD = {"url": "https://worldhealthorg-my.sharepoint.com/:f:/g/personal/ngomas_who_int/IgB4FZIvINGuS5mv6dOa2k7mAQxwcVVXGNXlxwf-n_fItAI?e=XQvsQd", "contact": "TWG secretariat (MSC)"};
 const fileStem = it => it.code.replace(/\s*·\s*/g,"-").replace(/\s+/g,"-");
 let UPL_SEL = "";
 function uploadButton(cls){
@@ -1184,7 +1184,7 @@ function uploadView(){
   v.append(h("ol",{class:"upl-steps"},
     h("li",null,h("h3",{class:"h3",text:"Name the file"}),h("div",{class:"sec",style:"gap:8px"},sel,out)),
     h("li",null,h("h3",{class:"h3",text:"Upload it"}),
-      h("p",{class:"small",text:UPLOAD.url?"The upload page opens in a new tab. Sign in with your WHO account, add the file and confirm. You will not see files uploaded by others.":"The upload link is being set up. Until it is ready, email the file to the "+UPLOAD.contact+"."}),
+      h("p",{class:"small",text:UPLOAD.url?"The WHO OneDrive upload page opens in a new tab. Add your file there; if asked, sign in with your WHO account.":"The upload link is being set up. Until it is ready, email the file to the "+UPLOAD.contact+"."}),
       uploadButton()),
     h("li",null,h("h3",{class:"h3",text:"MSC posts it on the hub"}),
       h("p",{class:"small",text:"The "+UPLOAD.contact+" checks the file, posts it against the document within one working day and updates its status. A newer version replaces the older one."}))));
