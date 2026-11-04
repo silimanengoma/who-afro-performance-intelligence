@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>MEC 2026 Preparation Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a working portal. Navy masthead band, left rail of views, wide main column of sessions and documents. */
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --surface-2:#EBEFF3; --ink:#13202C; --ink-2:#3B4958; --muted:#627284; --line:#D7DEE5;
+  --band:#0B2A4A; --band-2:#123A61; --band-ink:#FFFFFF; --band-muted:#A9BCD0;
+  --teal:#0F7A6A; --teal-bg:#E0F1EE; --blue:#1C61AE; --blue-bg:#E3EDF8; --amber:#9A6206; --amber-bg:#FAEFD9;
+  --coral:#B3412B; --coral-bg:#F9E4DE; --grey:#6B7785; --grey-bg:#E9EDF1;
+  --c-done:#1F6FC5; --c-on:#159C8B; --c-risk:#E39B17; --c-off:#D0583E; --c-ns:#9AA5B1;
+  --focus:#1C61AE;
+  --f-display:"Archivo", "Arial Narrow", Arial, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", Arial, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0C141C; --surface:#121D28; --surface-2:#192634; --ink:#E5ECF2; --ink-2:#C0CCD8; --muted:#8C9CAD; --line:#253546;
+  --band:#081B2E; --band-2:#0F2A45; --band-ink:#F2F6FA; --band-muted:#8FA6BE;
+  --teal:#4FC3B0; --teal-bg:#123330; --blue:#7DB0EC; --blue-bg:#15283E; --amber:#F0B54A; --amber-bg:#352812;
+  --coral:#F08D74; --coral-bg:#3A1F19; --grey:#A3AFBC; --grey-bg:#1E2B39;
+  --c-done:#5B9BE6; --c-on:#3CC0AE; --c-risk:#F0B54A; --c-off:#E8775F; --c-ns:#6E7C8B; --focus:#7DB0EC;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0C141C; --surface:#121D28; --surface-2:#192634; --ink:#E5ECF2; --ink-2:#C0CCD8; --muted:#8C9CAD; --line:#253546;
+  --band:#081B2E; --band-2:#0F2A45; --band-ink:#F2F6FA; --band-muted:#8FA6BE;
+  --teal:#4FC3B0; --teal-bg:#123330; --blue:#7DB0EC; --blue-bg:#15283E; --amber:#F0B54A; --amber-bg:#352812;
+  --coral:#F08D74; --coral-bg:#3A1F19; --grey:#A3AFBC; --grey-bg:#1E2B39;
+  --c-done:#5B9BE6; --c-on:#3CC0AE; --c-risk:#F0B54A; --c-off:#E8775F; --c-ns:#6E7C8B; --focus:#7DB0EC;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--band)}
+a{color:var(--blue)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums}
+
+/* masthead */
+.top{background:var(--band);color:var(--band-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top-in{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand .eyebrow{font:600 11px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--band-muted)}
+.brand .name{font:800 20px/1.15 var(--f-display);letter-spacing:.01em}
+.brand .name span{color:var(--band-muted);font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:3px 10px;font-size:13px;color:var(--band-ink);white-space:nowrap}
+.pill b{font-family:var(--f-mono);font-weight:600}
+.pill.count{background:var(--band-2);border-color:transparent}
+.who{font-size:12.5px;color:var(--band-muted)}
+
+/* shell */
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);gap:0;min-height:calc(100% - 60px)}
+.rail{border-right:1px solid var(--line);background:var(--surface);padding:18px 10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;height:calc(100vh - 64px);overflow:auto}
+.rail a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);color:var(--ink-2);text-decoration:none;font-weight:600;font-size:14.5px}
+.rail a .k{font:500 11px var(--f-mono);color:var(--muted);width:22px}
+.rail a:hover{background:var(--surface-2)}
+.rail a[aria-current="page"]{background:var(--teal-bg);color:var(--teal)}
+.rail a[aria-current="page"] .k{color:var(--teal)}
+.rail .sep{height:1px;background:var(--line);margin:10px 8px}
+.rail .group{font:600 10.5px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:6px 10px 4px}
+main{min-width:0;padding-block:24px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);height:auto;display:flex;overflow-x:auto;gap:4px;padding:8px max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));border-right:0;border-bottom:1px solid var(--line);z-index:15}
+  .rail a{white-space:nowrap;padding:6px 10px}
+  .rail .sep,.rail .group{display:none}
+  .rail a .k{display:none}
+  .top{position:relative;top:auto}
+  .rail{top:env(safe-area-inset-top,0px)}
+}
+
+/* type */
+.kicker{font:600 11px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.h1{font:800 30px/1.12 var(--f-display);letter-spacing:-.005em}
+.h2{font:700 20px/1.2 var(--f-display)}
+.h3{font:700 16px/1.25 var(--f-display)}
+.lede{font-size:17px;color:var(--ink-2);max-width:68ch;margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+p{margin:0}
+.sec{display:flex;flex-direction:column;gap:12px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:6px}
+
+/* panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:stretch}
+@media (max-width:900px){.hero{grid-template-columns:1fr}}
+.hero .title{display:flex;flex-direction:column;gap:10px}
+.days{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+@media (max-width:560px){.days{grid-template-columns:1fr}}
+.day-card{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--surface);display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit}
+.day-card:hover{border-color:var(--teal)}
+.day-card .d{font:600 12px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.day-card .t{font:700 16px/1.25 var(--f-display)}
+.count-box{background:var(--band);color:var(--band-ink);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px;justify-content:space-between}
+.count-box .big{font:800 56px/1 var(--f-display)}
+.count-box .lbl{color:var(--band-muted);font-size:14px}
+.ready-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.12);gap:2px}
+.ready-bar span{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.count-box .legend{color:var(--band-muted)}
+
+/* status chips */
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st-none{color:var(--muted);border-color:var(--line);background:transparent}
+.st-not-started,.st-requested{color:var(--grey);background:var(--grey-bg)}
+.st-drafting,.st-partial{color:var(--blue);background:var(--blue-bg)}
+.st-in-review{color:var(--amber);background:var(--amber-bg)}
+.st-final,.st-received{color:var(--teal);background:var(--teal-bg)}
+.st-issue,.st-overdue{color:var(--coral);background:var(--coral-bg)}
+.code{font:600 12px var(--f-mono);color:var(--ink-2);background:var(--surface-2);border-radius:4px;padding:1px 6px;white-space:nowrap}
+.type{font-size:12px;color:var(--muted)}
+
+/* programme */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px;font-weight:600;cursor:pointer;text-decoration:none;color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.prog{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.slot{display:grid;grid-template-columns:118px minmax(0,1fr) auto;gap:14px;padding:14px 16px;border-top:1px solid var(--line);align-items:start}
+.slot:first-child{border-top:0}
+.slot .time{font:500 13px var(--f-mono);color:var(--muted);padding-top:2px}
+.slot.brk{background:var(--surface-2);padding-block:7px;grid-template-columns:118px 1fr}
+.slot.brk .what{color:var(--muted);font-size:13.5px}
+.slot .what{display:flex;flex-direction:column;gap:5px;min-width:0}
+.slot .ttl{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.slot .ttl a{font:700 16.5px/1.25 var(--f-display);color:var(--ink);text-decoration:none}
+.slot .ttl a:hover{text-decoration:underline}
+.slot .q{color:var(--ink-2);font-size:14px}
+.mats{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.mat{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:4px;padding:2px 8px;font-size:12.5px;background:var(--surface);cursor:pointer}
+.mat:hover{border-color:var(--teal)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--c-ns);flex:none}
+.dot.not-started,.dot.requested{background:var(--grey)}
+.dot.drafting,.dot.partial{background:var(--blue)}
+.dot.in-review{background:var(--amber)}
+.dot.final,.dot.received{background:var(--teal)}
+.dot.issue{background:var(--coral)}
+.dot.none{background:transparent;border:1.5px solid var(--muted)}
+.slot .lead{font-size:12.5px;color:var(--muted);text-align:right;max-width:190px}
+@media (max-width:700px){.slot{grid-template-columns:1fr;gap:6px}.slot.brk{grid-template-columns:1fr}.slot .lead{text-align:left;max-width:none}}
+.code-badge{font:700 12px var(--f-mono);color:var(--surface);background:var(--teal);border-radius:4px;padding:2px 7px}
+.code-badge.d2{background:var(--blue)}
+.code-badge.plain{background:var(--grey)}
+
+/* session page */
+.crumbs{font-size:13px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap}
+.crumbs a{color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.facts.f3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:480px){.facts.f3{grid-template-columns:1fr}}
+.facts>div{background:var(--surface);padding:10px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.facts .l{font:600 10.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.callout{border-left:4px solid var(--teal);background:var(--teal-bg);padding:12px 14px;border-radius:0 var(--r) var(--r) 0}
+.callout.blue{border-color:var(--blue);background:var(--blue-bg)}
+.callout.amber{border-color:var(--amber);background:var(--amber-bg)}
+.pager{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pager a{text-decoration:none;font-weight:600}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tr.clickable{cursor:pointer}
+tr.clickable:hover td{background:var(--surface-2)}
+td .t{font-weight:600}
+td.r,th.r{text-align:right}
+
+/* filters */
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters select,.filters input,.field input,.field select,.field textarea{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:6px 10px;min-width:0}
+.filters input{flex:1 1 220px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:6px 12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--teal)}
+.btn.primary{background:var(--teal);color:var(--surface);border-color:var(--teal)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--coral)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+/* stats */
+.tile{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--teal);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.tile .v{font:800 28px/1.05 var(--f-display);font-variant-numeric:tabular-nums}
+.tile .l{font-weight:600;font-size:14px}
+.tile .s{font-size:12.5px;color:var(--muted)}
+.tile.blue{border-top-color:var(--c-done)} .tile.amber{border-top-color:var(--c-risk)} .tile.coral{border-top-color:var(--c-off)} .tile.navy{border-top-color:var(--ink)}
+.bars{display:flex;flex-direction:column;gap:9px}
+.brow{display:grid;grid-template-columns:200px minmax(0,1fr) 120px;gap:10px;align-items:center}
+.brow .lab{font-size:13.5px;color:var(--ink-2);text-align:right}
+.brow .track{display:flex;gap:2px;height:18px;align-items:stretch}
+.brow .track span{display:block;border-radius:2px;min-width:2px}
+.brow .val{font-size:12.5px;color:var(--muted)}
+.brow .val b{color:var(--ink);font-family:var(--f-mono)}
+@media (max-width:640px){.brow{grid-template-columns:1fr;gap:3px}.brow .lab{text-align:left}}
+.src{font-size:12px;color:var(--muted)}
+
+/* timeline */
+.tl{display:flex;flex-direction:column}
+.tl-row{display:grid;grid-template-columns:120px 16px minmax(0,1fr) auto;gap:10px;align-items:start;padding:7px 0}
+.tl-row .d{font:500 13px var(--f-mono);color:var(--ink-2);text-align:right}
+.tl-row .m{width:12px;height:12px;border-radius:50%;border:2px solid var(--teal);background:var(--surface);margin-top:4px}
+.tl-row.past .m{background:var(--muted);border-color:var(--muted)}
+.tl-row.past .d,.tl-row.past .w{color:var(--muted)}
+.tl-row.next .m{background:var(--amber);border-color:var(--amber)}
+.tl-row.mec .m{background:var(--ink);border-color:var(--ink)}
+.tl-row .tag{font-size:11.5px;color:var(--muted);white-space:nowrap}
+@media (max-width:560px){.tl-row{grid-template-columns:86px 14px minmax(0,1fr)}.tl-row .tag{display:none}}
+
+/* policies */
+.pol{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px}
+.pol .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pol .pc{font:800 15px var(--f-mono);color:var(--blue)}
+.pol .rec{font-size:13px;border-top:1px dashed var(--line);padding-top:8px}
+.pol .rec b{color:var(--teal)}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(6,14,22,.42);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--surface);z-index:41;display:flex;flex-direction:column;box-shadow:-12px 0 32px rgba(0,0,0,.18);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.drawer .dh{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.drawer .db{padding:16px 18px;overflow:auto;display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label,.flabel{font:600 10.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.field textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.files{display:flex;flex-direction:column;gap:6px}
+.file{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:var(--r);padding:7px 10px;flex-wrap:wrap}
+.file .fn{font-weight:600;word-break:break-word;min-width:0}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:14px;color:var(--muted);font-size:14px}
+.note-ro{font-size:13px;color:var(--muted);background:var(--surface-2);border-radius:var(--r);padding:8px 10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:var(--r);font-weight:600;z-index:60;max-width:calc(100% - 32px)}
+.attn{display:flex;flex-direction:column;gap:6px}
+.attn .it{display:grid;grid-template-columns:52px auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:14px;cursor:pointer;padding:3px 0}
+.attn .it:hover span:nth-child(3){text-decoration:underline}
+@media (max-width:560px){.attn .it{grid-template-columns:52px minmax(0,1fr)}.attn .it .code{display:none}}
+.ws-card{display:flex;flex-direction:column;gap:6px}
+.ws-card .wk{font:700 13px var(--f-mono);color:var(--teal)}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion: no-preference){ .drawer{animation:slide .18s ease-out} @keyframes slide{from{transform:translateX(24px);opacity:.6}to{transform:none;opacity:1}} }
+[hidden]{display:none!important}
+html,body{margin:0}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <span class="eyebrow">WHO African Region · Monitoring and Evaluation Committee</span>
+      <span class="name">MEC 2026 <span>Preparation Hub</span></span>
+    </div>
+    <div class="meta">
+      <span class="pill">19–20 November 2026 · Djoué, Brazzaville and online</span>
+      <span class="pill count" id="countPill">MEC in <b id="countDays">–</b> days</span>
+      <span class="who" id="whoLine">Loading statuses…</span>
+    </div>
+  </div>
+</header>
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="Views">
+    <span class="group">Meeting</span>
+    <a href="#overview" data-v="overview"><span class="k">00</span>Overview</a>
+    <a href="#programme" data-v="programme"><span class="k">01</span>Programme</a>
+    <a href="#day-1" data-v="day-1"><span class="k">D1</span>Day 1 sessions</a>
+    <a href="#day-2" data-v="day-2"><span class="k">D2</span>Day 2 sessions</a>
+    <div class="sep"></div>
+    <span class="group">Material</span>
+    <a href="#documents" data-v="documents"><span class="k">02</span>Documents</a>
+    <a href="#policies" data-v="policies"><span class="k">03</span>MEAL policies</a>
+    <a href="#data" data-v="data"><span class="k">04</span>Data</a>
+    <div class="sep"></div>
+    <span class="group">Work</span>
+    <a href="#twg" data-v="twg"><span class="k">05</span>TWG and timeline</a>
+    <a href="#decisions" data-v="decisions"><span class="k">06</span>Decision record</a>
+  </nav>
+  <main><div class="wrap" id="view"></div></main>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="dTitle"></aside>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+"use strict";
+/* --------------------------------------------------------------- settings
+   Edit these lines to adapt the hub. File paths are relative to this page. */
+const CONFIG = {
+  trackerFile:   "data/tracker.csv",    // status of every document (kept by MSC in Excel)
+  decisionsFile: "data/decisions.csv",  // decision record (kept by the rapporteurs during the MEC)
+  docsFolder:    "docs/",               // PDF, Word and PowerPoint files named in tracker.csv
+  contact:       "TWG secretariat (MSC)",
+  updateFormUrl: ""                     // optional: link to a Microsoft Form for status updates
+};
+/* Statuses shown only if data/tracker.csv cannot be read (page opened from disk). */
+const EMBED = {"cn":{"status":"In review","owner":"MSC","reviewer":"DPM","files":[],"note":"Version 3 of 13 October 2026. Dates to be updated to 19–20 November.","link":"","updated":"2026-11-03"},"tor":{"status":"In review","owner":"MSC","reviewer":"DPM","files":[],"note":"Version of 13 October 2026. Dates to be updated to 19–20 November.","link":"","updated":"2026-11-03"},"brief":{"status":"In review","owner":"MSC","reviewer":"DPM","files":[],"note":"Two-page brief of 13 October 2026. Dates to be updated to 19–20 November.","link":"","updated":"2026-11-03"},"pl-s2":{"status":"In review","owner":"WS1","reviewer":"","files":["MEC2026_D1_S2_Session_Plan.pdf","MEC2026_D1_S2_Session_Plan.docx"],"note":"Draft of 3 November 2026 for TWG review. Status-band thresholds to be confirmed by DPM; discussants to be named by 9 November.","link":"","updated":"2026-11-03"},"nt-s2":{"status":"Drafting","owner":"WS1","reviewer":"","files":["MEC2026_D1_S2_Participant_Note.pdf","MEC2026_D1_S2_Participant_Note.docx"],"note":"Budget, expenditure and results figures to be added from MEC-03 before circulation on 17 November.","link":"","updated":"2026-11-03"},"dr-05":{"status":"Received","owner":"MSC","reviewer":"","files":[],"note":"SAM1 export of 16 September 2026.","link":"","updated":"2026-11-03"},"dr-06":{"status":"Received","owner":"MSC","reviewer":"","files":[],"note":"Decision log, final version; Learning Hub export.","link":"","updated":"2026-11-03"},"dr-11":{"status":"Partly received","owner":"MSC with data, analytics and knowledge management","reviewer":"","files":[],"note":"IHME GBD 2023 extract held for 45 of 47 countries; two to add.","link":"","updated":"2026-11-03"}};
+/* ------------------------------------------------------------------ data */
+const MEC_START = new Date("2026-11-19T08:30:00+01:00");
+const DOC_ST = [["not-started","Not started"],["drafting","Drafting"],["in-review","In review"],["final","Final"]];
+const DATA_ST = [["requested","Requested"],["partial","Partly received"],["received","Received"],["issue","Issue"]];
+const DONE = new Set(["final","received"]);
+
+const SESSIONS = [
+ {id:"d1-open",day:1,code:"Open",time:"08:30–09:00",title:"Opening",q:"What did Programme Budget 2026–2027 promise to Member States, and how will the MEC take its decisions?",desc:"Welcome by the Regional Director; what PB 2026–2027 promised to Member States; objectives, agenda and decision rules.",out:"Agenda and decision rules adopted",lead:"Regional Director; DPM",ws:"WS6",mats:["mec-01","sl-open"]},
+ {id:"d1-s1",day:1,code:"S1",time:"09:00–09:30",title:"Did we do what we said?",q:"Have the recommendations of the previous MEC and Regional Programme Meeting been implemented?",desc:"Status of previous MEC and RPM recommendations: implemented, in progress, not started or no longer relevant.",out:"Each open recommendation closed, renewed or reassigned",lead:"DPM; WS4",ws:"WS4",mats:["mec-02","d-3","pl-s1","nt-s1","sl-s1"]},
+ {id:"d1-s2",day:1,code:"S2",time:"09:30–10:30",title:"Where are we on delivery?",q:"Ten months into the biennium, where does the Region stand in delivering what PB 2026–2027 promised, and where must we act in 2027?",desc:"Implementation of PB 2026–2027 in the 53 budget centres through four lenses: money (planned, funded, spent), delivery of outputs and priority P/S, results and contribution to country outcomes, and staffing. Combines SPM, GSM, SAM1 2026, workforce data and country results reports.",out:"Shared picture of implementation; up to three corrective actions, each with an owner and a deadline",lead:"DPM (moderator); WS1",ws:"WS1",mats:["mec-03","d-1","pl-s2","nt-s2","sl-s2"]},
+ {brk:true,day:1,time:"10:30–10:45",title:"Coffee break"},
+ {id:"d1-s3",day:1,code:"S3",time:"10:45–11:45",title:"Are we working on the right priorities?",q:"Do WHO funding, workforce and delivery follow national priorities and the burden of disease?",desc:"The alignment method tested in the DRC, applied to every Country Office: national priorities, burden of disease (IHME GBD 2023 cross-checked with WHO estimates), WHO funding and workforce by domain, and delivery. A typology of country situations and two or three deep dives introduced by their WRs.",out:"Positioning questions for 2028–2029 planning; mandate for policy P7",lead:"WS2; WRs of deep-dive countries",ws:"WS2",mats:["mec-04","prof-47","d-2","pl-s3","nt-s3","sl-s3"]},
+ {id:"d1-s4",day:1,code:"S4",time:"11:45–12:30",title:"Is Regional Office support reaching Country Offices?",q:"What support did Country Offices receive in 2026, and how did the Regional Office respond to their requests?",desc:"Support provided and requested in 2026, the response to the 84 requests logged in SAM1, results of the WR survey, and delivery by the six Regional Office budget centres.",out:"Support commitments and response times for 2027; mandate for policy P6",lead:"Cluster directors; WS4",ws:"WS4",mats:["mec-05","svy-ro","d-3","pl-s4","nt-s4","sl-s4"]},
+ {brk:true,day:1,time:"12:30–13:30",title:"Lunch"},
+ {id:"d1-s5",day:1,code:"S5",time:"13:30–14:30",title:"What is working that others can use?",q:"Which innovations and lessons can other offices use?",desc:"A marketplace of eight to ten innovations and lessons selected from the Learning Hub, Country Office nominations and cluster proposals: four-minute pitches at stations, recorded videos for online participants, selection by MEC members.",out:"Innovations and lessons selected for scale-up, each with a sponsoring cluster",lead:"WS3; presenting Country Offices",ws:"WS3",mats:["mec-06","vid-s5","pl-s5","nt-s5"]},
+ {id:"d1-s6",day:1,code:"S6",time:"14:30–15:30",title:"What is holding us back, and what will we change?",q:"Which bottlenecks hold delivery back, who must act, and what is exposed in 2027?",desc:"Challenges and systemic bottlenecks from the 970 decisions logged (800 unique), decisions to improve delivery, and the P/S exposed in 2027 by funding and staffing gaps.",out:"Bottleneck resolution register with owners and response times",lead:"WS4; cluster directors",ws:"WS4",mats:["mec-07","d-3","pl-s6","nt-s6","sl-s6"]},
+ {brk:true,day:1,time:"15:30–15:45",title:"Coffee break"},
+ {id:"d1-s7",day:1,code:"S7",time:"15:45–16:45",title:"Day 1 decisions",q:"Which decisions does the MEC confirm, and who owns them?",desc:"The rapporteurs present the draft decision record. The MEC confirms, amends or rejects each decision and assigns an accountable manager.",out:"Day 1 decision record",lead:"Regional Director; rapporteurs",ws:"WS6",mats:["mec-11","pl-s7"]},
+ {brk:true,day:1,time:"16:45–17:00",title:"Wrap-up and briefing on the Day 2 adoption process"},
+ {id:"d2-recap",day:2,code:"Recap",time:"08:30–09:05",title:"Recap and MEAL Framework status",q:"Where does MEAL implementation stand, and how will the policies be adopted?",desc:"Day 1 decisions; findings of the four Performance Intelligence pilots; reliability of performance data; Minimum MEAL Package; MEAL financing; adoption rules.",out:"Shared view of the MEAL baseline and of the adoption rules",lead:"DPM; MSC",ws:"WS5",mats:["mec-08","d-4","pl-d2","sl-recap"]},
+ {id:"d2-a",day:2,code:"A",time:"09:05–10:05",title:"Block A. Know where we stand",q:"Do we measure MEAL maturity and performance evidence the same way everywhere?",desc:"P1 Performance Intelligence entry gate and P2 Performance evidence standard. Each policy is opened by a champion from the TWG review component.",out:"A decision on P1 and P2: adopt, adopt with amendments, or refer back",lead:"WS5; policy champions",ws:"WS5",pols:["P1","P2"],mats:["br-p1","br-p2","d-4","pl-d2","sl-d2a"]},
+ {brk:true,day:2,time:"10:05–10:20",title:"Coffee break"},
+ {id:"d2-b",day:2,code:"B",time:"10:20–11:20",title:"Block B. Fund and staff MEAL",q:"Will MEAL have the money and the people it needs?",desc:"P3 MEAL financing threshold of 3% and P4 MEAL function and competencies.",out:"A decision on P3 and P4",lead:"WS5; policy champions",ws:"WS5",pols:["P3","P4"],mats:["br-p3","br-p4","d-4","pl-d2","sl-d2b"]},
+ {id:"d2-c",day:2,code:"C",time:"11:20–12:35",title:"Block C. Use evidence for decisions",q:"Will evaluations, decisions and planning use the evidence we produce?",desc:"P5 Country-led CCS evaluations, P6 Decision follow-up and Regional Office support standard, and P7 Burden-informed operational planning.",out:"A decision on P5, P6 and P7",lead:"WS5; policy champions",ws:"WS5",pols:["P5","P6","P7"],mats:["br-p5","br-p6","br-p7","pl-d2","sl-d2c"]},
+ {id:"d2-close",day:2,code:"Close",time:"12:35–13:15",title:"Adoption and closing",q:"What does the MEC adopt, and what happens next?",desc:"Adoption of the outcome statement; endorsement in principle of the costed 2027 MEAL roadmap, revised in line with the decisions by 27 November; closing remarks by the Regional Director.",out:"MEC 2026 outcome statement",lead:"Regional Director; MEC members",ws:"WS6",mats:["mec-10","mec-11","sl-close"]},
+ {brk:true,day:2,time:"13:15",title:"Lunch and departures"}
+];
+const SES = Object.fromEntries(SESSIONS.filter(s=>!s.brk).map(s=>[s.id,s]));
+
+
+const I = [];
+function add(id,code,title,type,sessions,ws,due,desc){I.push({id,code,title,type,sessions,ws,due,desc});}
+add("cn","CN","Concept note, version 3","Core document",["meeting"],"MSC","2026-10-16","Purpose, objectives, programme, MEAL policies, preparation and follow-up of MEC 2026.");
+add("tor","ToR","TWG terms of reference","Core document",["meeting"],"MSC","2026-10-16","Mandate, composition, work streams, timeline, quality assurance and data governance of the Technical Working Group.");
+add("brief","Brief","Executive brief for the Regional Director","Core document",["meeting"],"MSC","2026-10-16","The concept note in two pages, with the decisions requested from the Regional Director.");
+add("mec-01","MEC-01","Agenda, programme and decision rules","Paper",["d1-open"],"WS6","2026-11-17","Objectives, programme and the three adoption options for Day 2. Three pages.");
+add("mec-02","MEC-02","Status of previous MEC and RPM recommendations","Paper",["d1-s1"],"WS4","2026-11-17","Tracker with the status of each recommendation and the proposed action. Four pages and tracker.");
+add("mec-03","MEC-03","PB 2026–2027 implementation report, 53 budget centres","Paper",["d1-s2"],"WS1","2026-11-17","Budget, funding and expenditure; delivery of outputs and P/S; results achieved; staffing. Sources: SPM, GSM, SAM1, workforce data, country results reports. Ten pages.");
+add("mec-04","MEC-04","Strategic alignment analysis","Paper",["d1-s3"],"WS2","2026-11-17","Regional report, typology of country situations, two or three deep dives. Twelve pages.");
+add("prof-47","Profiles","47 country alignment profiles","Country profiles",["d1-s3"],"WS2","2026-11-16","Two pages per Country Office. Sent to WRs for fact-check on 6 November; comments due 13 November. Internal documents.");
+add("mec-05","MEC-05","Regional Office support to Country Offices","Paper",["d1-s4"],"WS4","2026-11-17","Support provided and requested in 2026, response to SAM1 requests, WR survey results, proposed support commitments and response times. Six pages.");
+add("mec-06","MEC-06","Innovations and lessons learned catalogue","Paper",["d1-s5"],"WS3","2026-11-17","Eight to ten innovations and lessons, one page each, with the screening grid.");
+add("mec-07","MEC-07","Challenges, decisions and 2027 delivery risk","Paper",["d1-s6"],"WS4","2026-11-17","Decision log analysis, systemic bottlenecks, resolution register, funding and staffing exposure. Eight pages.");
+add("mec-08","MEC-08","MEAL Framework implementation status","Paper",["d2-recap"],"WS5","2026-11-17","Synthesis of the four Performance Intelligence pilots, reliability of performance data, Minimum MEAL Package, financing analysis. Eight pages.");
+const POLICIES = [
+ {p:"P1",block:"A",title:"Performance Intelligence entry gate",rule:"Every Country Office completes a Performance Intelligence assessment before entering MEAL implementation, in three waves from January 2027 to June 2028, with a roadmap signed by the WR.",rec:"Mandatory for all Country Offices, in three waves",ev:"A measured MEAL baseline exists in four pilot Country Offices only."},
+ {p:"P2",block:"A",title:"Performance evidence standard",rule:"Ratings of “completed” and “strong contribution” cite verifiable evidence; financial data come from GSM; a 10% verification sample is checked every cycle.",rec:"Standard as proposed",ev:"1 of 1,230 SAM1 country assessments cites an evidence source; one in five rests on estimated or unavailable data."},
+ {p:"P3",block:"B",title:"MEAL financing threshold of 3%",rule:"At least 3% of each budget centre’s financed workplan budget goes to MEAL, tracked with a marker in the planning system; new proposals budget MEAL at 3% or more.",rec:"3% of financed budget, all funds, with the proposal rule",ev:"MEAL is 4.21% of planned costs but 1.35% of financed costs, a gap of US$ 39.7 million (provisional)."},
+ {p:"P4",block:"B",title:"MEAL function and competencies",rule:"Every Country Office and budget centre designates a MEAL focal point with terms of reference, certified through the Competency Development Programme by March 2028.",rec:"As proposed",ev:"MEAL focal point arrangements differ from office to office; 356 Learning Hub entries, one flagged for regional sharing."},
+ {p:"P5",block:"C",title:"Country-led CCS evaluations",rule:"CCS evaluations are led by national evaluators from a pre-qualified regional roster, with Regional Office quality assurance, from July 2027.",rec:"Use of the roster mandatory, exceptions approved by DPM",ev:"CCS evaluations are commissioned case by case; no regional roster of evaluators exists."},
+ {p:"P6",block:"C",title:"Decision follow-up and Regional Office support standard",rule:"Every decision records a root cause, an owner and a deadline; support requests are acknowledged in 5 working days and an action plan agreed in 20; overdue decisions are escalated.",rec:"As proposed",ev:"970 decisions logged, none with a root cause; 91 overdue; 84 requests for Regional Office support."},
+ {p:"P7",block:"C",title:"Burden-informed operational planning",rule:"Each Country Office submits a two-page alignment profile with its 2028–2029 workplans, reviewed by the Regional Office before approval.",rec:"Profile mandatory for all Country Offices",ev:"In the DRC, 91% of funding goes to outbreaks, polio and immunization, about 9% of the burden of disease."}
+];
+const BLOCK_SES = {A:"d2-a",B:"d2-b",C:"d2-c"};
+POLICIES.forEach(p=>add("br-"+p.p.toLowerCase(),"MEC-09 · "+p.p,"Policy brief: "+p.title,"Policy brief",[BLOCK_SES[p.block]],"WS5","2026-11-17","Two-page brief with the problem, proposed policy, phasing, accountability, resources, indicator and decision options."));
+add("mec-10","MEC-10","Costed MEAL implementation roadmap 2027","Paper",["d2-close"],"WS5","2026-11-17","Phased actions, owners, costs and funding sources, revised in line with the decisions by 27 November. Six pages.");
+add("mec-11","MEC-11","Decision record and outcome statement","Paper",["d1-s7","d2-close"],"WS6","2026-11-17","Decision format and draft outcome statement; filled live by the rapporteurs.");
+add("d-1","D-1","Dashboard: PB 2026–2027 implementation","Dashboard",["d1-s2"],"WS1, WS6","2026-11-17","Budget, funding, expenditure and delivery status by budget centre, outcome and cluster. Status bands, no ranking.");
+add("d-2","D-2","Dashboard: alignment explorer","Dashboard",["d1-s3"],"WS2, WS6","2026-11-17","Country profiles: priorities, burden of disease, funding, workforce and delivery.");
+add("d-3","D-3","Dashboard: decisions, support and recommendations","Dashboard",["d1-s1","d1-s4","d1-s6"],"WS4, WS6","2026-11-17","Decisions by category, severity, owner and age; Regional Office support requests; MEC and RPM recommendations.");
+add("d-4","D-4","Dashboard: MEAL financing and maturity","Dashboard",["d2-recap","d2-a","d2-b"],"WS5, WS6","2026-11-17","MEAL share of planned and financed budgets; maturity results of the pilots.");
+[["s1","d1-s1","WS4"],["s2","d1-s2","WS1"],["s3","d1-s3","WS2"],["s4","d1-s4","WS4"],["s5","d1-s5","WS3"],["s6","d1-s6","WS4"],["s7","d1-s7","WS6"]].forEach(([k,s,w])=>add("pl-"+k,"Plan "+k.toUpperCase(),"Session plan: "+SES[s].title,"Session plan",[s],w,"2026-11-13","Facilitator’s guide: run of show, roles, script, slide plan, contingencies, preparation checklist."));
+add("pl-d2","Plan D2","Day 2 facilitation plan: policy adoption","Session plan",["d2-recap","d2-a","d2-b","d2-c"],"WS5","2026-11-13","Adoption rules, policy champions, sequence of each block, rapporteur template for the Regional Director’s decisions.");
+[["s1","d1-s1","WS4"],["s2","d1-s2","WS1"],["s3","d1-s3","WS2"],["s4","d1-s4","WS4"],["s5","d1-s5","WS3"],["s6","d1-s6","WS4"]].forEach(([k,s,w])=>add("nt-"+k,"Note "+k.toUpperCase(),"Participant note: "+SES[s].title,"Participant note",[s],w,"2026-11-17","What the session will answer, how to read the figures, how it will run and what is asked of participants."));
+[["open","d1-open","WS6"],["s1","d1-s1","WS4"],["s2","d1-s2","WS1"],["s3","d1-s3","WS2"],["s4","d1-s4","WS4"],["s6","d1-s6","WS4"],["recap","d2-recap","WS5"],["d2a","d2-a","WS5"],["d2b","d2-b","WS5"],["d2c","d2-c","WS5"],["close","d2-close","WS6"]].forEach(([k,s,w])=>add("sl-"+k,"Slides","Presentation: "+SES[s].title,"Slides",[s],w,"2026-11-18","Seven slides at most, headlines that state the finding, English and French. The PDF and the PowerPoint are posted here once final."));
+add("svy-ro","Survey","WR survey on Regional Office support","Data",["d1-s4"],"WS4","2026-10-30","Ten-minute survey of WRs on the relevance, timeliness and quality of support received in 2026.");
+add("vid-s5","Videos","Marketplace videos","Video",["d1-s5"],"WS3","2026-11-18","Three-minute recorded pitches for online participants, one per selected innovation or lesson.");
+const DR = [
+ ["Approved PB 2026–2027 budget and allocations by budget centre and outcome","SPM","Planning and budget","2026-10-23","WS1"],
+ ["Workplans 2026–2027, all budget centres and plans, by P/S: planned cost, funded amount, funding type","SPM","Planning and budget","2026-10-23","WS1, WS2, WS5"],
+ ["Expenditure by budget centre and P/S","GSM","Finance","2026-10-23","WS1, WS2"],
+ ["Funding source status, flexible and earmarked","SPM and GSM","Planning and budget; resource mobilisation","2026-10-23","WS1, WS4, WS5"],
+ ["SAM1 assessments, final export","SAM1 platform","MSC","2026-10-19","WS1–WS4"],
+ ["SAM1 decision log and Learning Hub","SAM1 platform","MSC","2026-10-19","WS3, WS4"],
+ ["Workforce plans and staff funding coverage, aggregated","HR systems","Human resources","2026-10-23","WS1, WS2, WS4, WS5"],
+ ["Emergency and polio plans not selected in SAM1","SPM","Emergency programme; polio","2026-10-23","WS1, WS2"],
+ ["Records of Regional Office support to Country Offices, January–October 2026","Cluster records; mission data","Cluster directors; DPM office","2026-10-23","WS4"],
+ ["Status of previous MEC and RPM recommendations","Records of the DPM office","DPM office; MSC","2026-10-23","WS4"],
+ ["Burden of disease: IHME GBD 2023 and WHO estimates","IHME; WHO estimates","MSC with data, analytics and knowledge management","2026-10-23","WS2"],
+ ["Reports of the four Performance Intelligence pilots","MSC","MSC","2026-10-23","WS5"],
+ ["WR survey on Regional Office support","Online survey","MSC; WRs","2026-10-30","WS4"],
+ ["Country results reports and documented contributions to outcomes","Country Offices","WRs","2026-10-30","WS1, WS3"],
+ ["Priorities of the national health plan and of the CCS","Country Offices","WRs","2026-10-30","WS2"],
+ ["Nominations of innovations and lessons learned","Call for innovations and lessons","WRs; cluster directors","2026-10-30","WS3"],
+ ["MEAL financing analysis updated with October data","SPM","MSC; planning and budget","2026-10-30","WS5"],
+ ["Inventory of CCS cycles and evaluations: end dates, evaluations done or planned, costs","CCS records","MSC evaluation function; country focal points","2026-10-30","WS5"],
+ ["MEAL focal point arrangements by budget centre","Short survey","MSC","2026-10-30","WS5"]
+];
+DR.forEach((r,i)=>{const n=String(i+1).padStart(2,"0");I.push({id:"dr-"+n,code:"DR-"+n,title:r[0],type:"Data request",sessions:["twg"],ws:r[4],due:r[3],desc:"Source: "+r[1]+". Owner: "+r[2]+".",src:r[1],owner:r[2]});});
+const ITEM = Object.fromEntries(I.map(x=>[x.id,x]));
+const TYPES = ["Core document","Paper","Policy brief","Country profiles","Dashboard","Session plan","Participant note","Slides","Video","Data","Data request"];
+
+const MILESTONES = [
+ ["2026-10-16","Fri 16 Oct","Concept note and TWG terms of reference cleared; TWG members nominated","DPM; cluster directors"],
+ ["2026-10-19","Mon 19 Oct","TWG launch; data request, call for innovations and lessons, WR survey issued","MSC"],
+ ["2026-10-23","Fri 23 Oct","Core data received","Data owners"],
+ ["2026-10-30","Fri 30 Oct","Remaining data received; WR survey closes; data freeze; deep-dive countries agreed; invitations sent","MSC; DPM"],
+ ["2026-11-06","Fri 6 Nov","Storylines and first drafts; country profiles sent to WRs; innovations shortlisted","TWG work streams"],
+ ["2026-11-11","Wed 11 – Fri 13 Nov","TWG technical component in Kintele: drafting, peer review, mock MEC","TWG Component A",["2026-11-13"]],
+ ["2026-11-13","Fri 13 Nov","WR comments on country profiles due; innovations selected; session plans final","WRs; WS3"],
+ ["2026-11-16","Mon 16 Nov","Remote review by TWG Component B; review meeting in the afternoon","TWG Component B"],
+ ["2026-11-17","Tue 17 Nov","Papers cleared by DPM and circulated","MSC; DPM"],
+ ["2026-11-17","Wed 18 Nov","French summaries and policy briefs; WR policy webinar; slides final; videos recorded; dry run with DPM; technical check","MSC; work stream leads"],
+ ["2026-11-19","Thu 19 – Fri 20 Nov","MEC 2026, Djoué, Brazzaville","Regional Director; DPM",["2026-11-20"],"mec"],
+ ["2026-11-27","Fri 27 Nov","Decision record, Regional Director’s MEAL decisions and revised roadmap circulated","MSC; DPM"],
+ ["2026-12-04","Fri 4 Dec","TWG close-out note","MSC"],
+ ["2027-01-08","Fri 8 Jan 2027","Implementation arrangements confirmed by accountable managers","Country and regional managers"],
+ ["2027-02-18","Thu 18 Feb 2027","90-day progress review","DPM; MSC"]
+];
+
+const WS = [
+ ["WS1","PB implementation and performance","Where are we in delivering PB 2026–2027 in the 53 budget centres?","MEC-03, D-1, number register","S2; P2"],
+ ["WS2","Strategic alignment","Do WHO resources follow national priorities and the burden of disease?","MEC-04, 47 country profiles, D-2","S3; P7"],
+ ["WS3","Innovations and lessons learned","What is working that other offices can use?","MEC-06, marketplace","S5; P4"],
+ ["WS4","Challenges, decisions and Regional Office support","What holds delivery back, and is Regional Office support reaching Country Offices?","MEC-02, MEC-05, MEC-07, D-3","S1, S4, S6; P6"],
+ ["WS5","MEAL policy package","Which rules make the MEAL Framework work, and at what cost?","MEC-08, MEC-09 (P1–P7), MEC-10, D-4","Day 2"],
+ ["WS6","Dashboards, visuals and meeting design","Can MEC members grasp each message in two minutes?","D-1 to D-4, MEC-01, MEC-11, templates","All sessions"]
+];
+
+/* SAM1 2026 aggregates: export of 16 September 2026; decision log final version */
+const OBJ = [
+ ["Climate change and health","1",[2,11,3,0,0]],
+ ["Health determinants","2",[5,47,3,0,0]],
+ ["Primary health care and health systems","3",[17,143,5,3,1]],
+ ["Service coverage and financial protection","4",[34,239,1,3,2]],
+ ["Emergency preparedness","5",[15,90,2,6,2]],
+ ["Emergency detection and response","6",[56,157,5,4,1]],
+ ["WHO leadership and enabling functions","7–8",[39,366,5,3,0]]
+];
+const STATUS_KEYS = [["Completed","--c-done"],["On track","--c-on"],["At risk","--c-risk"],["Off track","--c-off"],["Not started","--c-ns"]];
+const DLOG_CAT = [["Financial",356],["Technical",151],["Other",148],["Human resources",89],["Political",74],["Partner",69],["Procurement",48]];
+
+/* ------------------------------------------------------------- utilities */
+const $ = s=>document.querySelector(s);
+function h(tag,attrs,...kids){const el=document.createElement(tag);if(attrs)for(const[k,v]of Object.entries(attrs)){if(v==null||v===false)continue;if(k==="class")el.className=v;else if(k==="text")el.textContent=v;else if(k.startsWith("on"))el.addEventListener(k.slice(2),v);else el.setAttribute(k,v===true?"":v);}for(const k of kids.flat()){if(k==null||k===false)continue;el.append(k.nodeType?k:document.createTextNode(String(k)));}return el;}
+function today(){const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+function dateOf(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
+function fmtDate(s){if(!s)return "";return dateOf(s).toLocaleDateString("en-GB",{day:"numeric",month:"short"});}
+function fmtStamp(iso){try{return new Date(iso).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});}catch(e){return "";}}
+function isData(it){return it.type==="Data request"||it.type==="Data";}
+function stList(it){return isData(it)?DATA_ST:DOC_ST;}
+function stOf(id){const r=STATE.items[id];return r&&r.status?r.status:null;}
+function stLabel(it,st){if(!st)return "Not recorded";const f=stList(it).find(x=>x[0]===st);return f?f[1]:st;}
+function overdue(it){const st=stOf(it.id);return !!(st&&!DONE.has(st)&&it.due&&dateOf(it.due)<today());}
+function chip(it){const st=stOf(it.id);const w=h("span",{class:"row",style:"gap:6px"});w.append(h("span",{class:"chip st-"+(st||"none"),text:stLabel(it,st)}));if(overdue(it))w.append(h("span",{class:"chip st-overdue",text:"Overdue"}));return w;}
+function fileCount(id){const r=STATE.items[id];return (r&&Array.isArray(r.files))?r.files.length:0;}
+let toastT;function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200);}
+
+/* ----------------------------------------------------------------- state */
+const STATE={items:{},decisions:[],dbReady:false,dbNote:"",canWrite:null,uid:null,names:{}};
+
+/* ---------------------------------------------------------------- views */
+const VIEWS={overview,programme:()=>programme(0),"day-1":()=>programme(1),"day-2":()=>programme(2),documents,policies,data:dataView,twg,decisions};
+let docFilter={q:"",type:"",day:"",status:""};
+
+function route(){
+  const raw=(location.hash||"#overview").slice(1);
+  let v=raw;
+  document.querySelectorAll(".rail a").forEach(a=>a.removeAttribute("aria-current"));
+  const view=$("#view");view.replaceChildren();
+  if(raw.startsWith("session-")&&SES[raw.slice(8)]){sessionView(SES[raw.slice(8)]);v="day-"+SES[raw.slice(8)].day;}
+  else if(VIEWS[raw]){VIEWS[raw]();}
+  else{overview();v="overview";}
+  const a=document.querySelector('.rail a[data-v="'+v+'"]');if(a)a.setAttribute("aria-current","page");
+  view.append(h("footer",null,"Working platform for the MEC 2026 Technical Working Group. Internal use. Country data appear as status and profiles, never as rankings. Figures from SAM1 2026 (export of 16 September 2026) and the final decision log; budget and expenditure figures come with paper MEC-03."));
+}
+function rerender(){
+  const ae=document.activeElement;const view=$("#view");
+  const busyView=(ae&&view.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))||!!view.querySelector("form[data-dirty]");
+  if(!busyView){const y=window.scrollY;route();window.scrollTo(0,y);}
+  if(OPEN_ID&&!$("#drawer form[data-dirty]"))renderDrawer();
+}
+
+function sectionHead(title,right){return h("div",{class:"sec-head"},h("h2",{class:"h2",text:title}),right||null);}
+
+function overview(){
+  const v=$("#view");
+  const items=I.filter(x=>x.type!=="Data request");
+  const counts={none:0,"not-started":0,drafting:0,"in-review":0,final:0};
+  items.forEach(it=>{const s=stOf(it.id);const k=s==="received"?"final":s==="requested"?"not-started":s==="partial"?"drafting":s==="issue"?"in-review":(s||"none");counts[k]=(counts[k]||0)+1;});
+  const days=Math.ceil((MEC_START-new Date())/86400000);
+  const bar=h("div",{class:"ready-bar"});
+  [["final","var(--c-on)"],["in-review","var(--c-risk)"],["drafting","var(--c-done)"],["not-started","var(--c-ns)"],["none","rgba(255,255,255,.18)"]].forEach(([k,c])=>{if(counts[k])bar.append(h("span",{style:"flex:"+counts[k]+";background:"+c,title:k}));});
+  v.append(h("section",{class:"hero"},
+    h("div",{class:"title"},
+      h("span",{class:"kicker",text:"Monitoring and Evaluation Committee 2026"}),
+      h("h1",{class:"h1",text:"Delivering on our promises to Member States"}),
+      h("p",{class:"lede",text:"One place for everything the MEC needs: the programme by day and session, the papers, session plans, participant notes and presentations, the data behind them, and the decisions taken."}),
+      h("div",{class:"days"},
+        h("a",{class:"day-card",href:"#day-1"},h("span",{class:"d",text:"Day 1 · Thu 19 Nov · 08:30–17:00"}),h("span",{class:"t",text:"Where are we in delivering our promises?"}),h("span",{class:"small muted",text:"Review of Programme Budget 2026–2027 implementation in the 53 budget centres, in seven sessions"})),
+        h("a",{class:"day-card",href:"#day-2"},h("span",{class:"d",text:"Day 2 · Fri 20 Nov · 08:30–13:15"}),h("span",{class:"t",text:"MEAL Framework: adoption of policies"}),h("span",{class:"small muted",text:"Seven implementation policies, decided in three blocks"}))
+      )
+    ),
+    h("div",{class:"count-box"},
+      h("div",null,h("div",{class:"big num",text:days>0?String(days):"0"}),h("div",{class:"lbl",text:days>0?"days to the opening session":"The MEC has started"})),
+      h("div",{class:"sec",style:"gap:8px"},
+        h("div",{class:"lbl",text:"Readiness of the "+items.length+" meeting materials"}),bar,
+        h("div",{class:"legend"},
+          h("span",null,h("i",{style:"background:var(--c-on)"}),"Final "+counts.final),
+          h("span",null,h("i",{style:"background:var(--c-risk)"}),"In review "+counts["in-review"]),
+          h("span",null,h("i",{style:"background:var(--c-done)"}),"Drafting "+counts.drafting),
+          h("span",null,h("i",{style:"background:var(--c-ns)"}),"Not started "+counts["not-started"]),
+          h("span",null,h("i",{style:"background:rgba(255,255,255,.3)"}),"Not recorded "+counts.none))
+      )
+    )
+  ));
+  v.append(h("div",{class:"callout amber"},h("p",null,h("b",{text:"New dates. "}),"The MEC moves to Thursday 19 and Friday 20 November 2026. Papers are now due on Tuesday 17 November and slides on Wednesday 18 November; the revised timeline is under TWG and timeline.")));
+  // next milestones + attention
+  const t=today();
+  const upcoming=MILESTONES.filter(m=>dateOf((m[4]&&m[4][0])||m[0])>=t).slice(0,4);
+  const due=items.filter(it=>it.due&&!DONE.has(stOf(it.id)||"")).sort((a,b)=>a.due.localeCompare(b.due));
+  const soon=due.filter(it=>dateOf(it.due)>=t).slice(0,6);
+  const od=items.filter(overdue);
+  const ms=h("div",{class:"panel sec"},h("h3",{class:"h3",text:"Next milestones"}),
+    h("div",{class:"tl"},upcoming.map((m,i)=>tlRow(m,i===0))),h("a",{href:"#twg",class:"small",text:"Full timeline"}));
+  const att=h("div",{class:"panel sec"},h("h3",{class:"h3",text:"Due next"}),
+    soon.length?h("div",{class:"attn"},soon.map(it=>h("div",{class:"it",tabindex:"0",role:"button",onclick:()=>openItem(it.id),onkeydown:e=>{if(e.key==="Enter")openItem(it.id);}},h("span",{class:"mono small muted",text:fmtDate(it.due)}),h("span",{class:"code",text:it.code}),h("span",{text:it.title}),chip(it)))):h("p",{class:"muted",text:"Nothing due."}),
+    od.length?h("p",{class:"small",style:"color:var(--coral)",text:od.length+" item"+(od.length>1?"s are":" is")+" past due and not final."}):null);
+  v.append(h("section",{class:"grid g2"},ms,att));
+  // sessions at a glance
+  const g=h("div",{class:"grid g3"});
+  SESSIONS.filter(s=>!s.brk).forEach(s=>{
+    const mats=s.mats.map(id=>ITEM[id]);const fin=mats.filter(it=>DONE.has(stOf(it.id)||"")).length;
+    g.append(h("a",{class:"day-card",href:"#session-"+s.id},
+      h("span",{class:"d",text:"Day "+s.day+" · "+s.time}),
+      h("span",{class:"row",style:"gap:8px"},h("span",{class:"code-badge"+(s.day===2?" d2":""),text:s.code}),h("span",{class:"t",text:s.title})),
+      h("span",{class:"small muted",text:fin+" of "+mats.length+" materials final · "+s.lead})));
+  });
+  v.append(h("section",{class:"sec"},sectionHead("Sessions",h("a",{href:"#programme",class:"small",text:"Programme by day"})),g));
+}
+
+function tlRow(m,isNext){
+  const t=today();const end=dateOf((m[4]&&m[4][0])||m[0]);const past=end<t;
+  return h("div",{class:"tl-row"+(past?" past":"")+(isNext&&!past?" next":"")+(m[5]==="mec"?" mec":"")},
+    h("span",{class:"d",text:m[1]}),h("span",{class:"m"}),h("span",{class:"w",text:m[2]}),h("span",{class:"tag",text:past?"Date passed":m[3]}));
+}
+
+function programme(day){
+  const v=$("#view");
+  const d=day||1;
+  const title=d===1?"Day 1 · Thursday 19 November":"Day 2 · Friday 20 November";
+  const theme=d===1?"Where are we in delivering our promises to Member States?":"MEAL Framework: adoption of implementation policies";
+  v.append(h("section",{class:"sec"},
+    h("span",{class:"kicker",text:"Programme"}),
+    h("h1",{class:"h1",text:title}),
+    h("p",{class:"lede",text:theme}),
+    h("div",{class:"tabs",role:"tablist"},
+      h("a",{class:"tab",role:"tab","aria-selected":String(d===1),href:"#day-1",text:"Day 1"}),
+      h("a",{class:"tab",role:"tab","aria-selected":String(d===2),href:"#day-2",text:"Day 2"}))
+  ));
+  if(d===2)v.append(h("div",{class:"callout blue"},h("p",null,h("b",{text:"Adoption rule. "}),"For each policy the MEC chooses one of three options: adopt, adopt with amendments, or refer back to the TWG with specific questions and a deadline. The Regional Director’s decisions are issued in writing by 27 November.")));
+  const p=h("div",{class:"prog"});
+  SESSIONS.filter(s=>s.day===d).forEach(s=>{
+    if(s.brk){p.append(h("div",{class:"slot brk"},h("span",{class:"time",text:s.time}),h("span",{class:"what",text:s.title})));return;}
+    p.append(h("div",{class:"slot"},
+      h("span",{class:"time",text:s.time}),
+      h("div",{class:"what"},
+        h("div",{class:"ttl"},h("span",{class:"code-badge"+(d===2?" d2":""),text:s.code}),h("a",{href:"#session-"+s.id,text:s.title})),
+        h("p",{class:"q",text:s.q}),
+        h("div",{class:"mats"},s.mats.map(matChip))),
+      h("span",{class:"lead",text:s.lead})));
+  });
+  v.append(p);
+}
+function matChip(id){const it=ITEM[id];const st=stOf(id);const n=fileCount(id);
+  return h("button",{class:"mat",type:"button",onclick:()=>openItem(id),title:it.title+" · "+stLabel(it,st)},h("span",{class:"dot "+(st||"none")}),h("span",{text:["Paper","Dashboard","Policy brief"].includes(it.type)?it.code:it.type}),n?h("span",{class:"mono small muted",text:"·"+n}):null);}
+
+function sessionView(s){
+  const v=$("#view");
+  const list=SESSIONS.filter(x=>!x.brk);const idx=list.indexOf(s);
+  v.append(h("div",{class:"crumbs"},h("a",{href:"#day-"+s.day,text:"Day "+s.day}),h("span",{text:"/"}),h("span",{text:s.code+" · "+s.time})));
+  v.append(h("section",{class:"sec"},
+    h("div",{class:"row"},h("span",{class:"code-badge"+(s.day===2?" d2":""),text:s.code}),h("span",{class:"kicker",text:(s.day===1?"Day 1 · Thursday 19 November":"Day 2 · Friday 20 November")+" · "+s.time})),
+    h("h1",{class:"h1",text:s.title}),
+    h("div",{class:"callout"},h("span",{class:"flabel",text:"Guiding question"}),h("p",{style:"font-size:16.5px;font-weight:600",text:s.q}))));
+  v.append(h("div",{class:"facts"},
+    h("div",null,h("span",{class:"l",text:"What happens"}),h("span",{text:s.desc})),
+    h("div",null,h("span",{class:"l",text:"Expected output"}),h("span",{text:s.out})),
+    h("div",null,h("span",{class:"l",text:"Lead"}),h("span",{text:s.lead})),
+    h("div",null,h("span",{class:"l",text:"Prepared by"}),h("span",{text:"TWG "+s.ws}))));
+  if(s.pols){const g=h("div",{class:"grid g2"});s.pols.forEach(pp=>g.append(polCard(POLICIES.find(x=>x.p===pp))));v.append(h("section",{class:"sec"},sectionHead("Policies decided in this block"),g));}
+  v.append(h("section",{class:"sec"},sectionHead("Materials",h("span",{class:"small muted",text:"Select a row to see files, status and review notes"})),itemTable(s.mats.map(id=>ITEM[id]),{session:false})));
+  const ds=STATE.decisions.filter(d=>d.session===s.id);
+  if(ds.length)v.append(h("section",{class:"sec"},sectionHead("Decisions recorded"),decisionTable(ds)));
+  v.append(h("div",{class:"pager"},
+    idx>0?h("a",{href:"#session-"+list[idx-1].id,text:"← "+list[idx-1].code+" "+list[idx-1].title}):h("span"),
+    idx<list.length-1?h("a",{href:"#session-"+list[idx+1].id,text:list[idx+1].code+" "+list[idx+1].title+" →"}):h("span")));
+}
+
+function sessionLabel(it){return it.sessions.map(sid=>sid==="meeting"?"Whole meeting":sid==="twg"?"TWG":(SES[sid].day===1?"D1 ":"D2 ")+SES[sid].code).join(", ");}
+function itemTable(items,opt){
+  opt=opt||{};
+  const tb=h("tbody");
+  items.forEach(it=>{
+    const n=fileCount(it.id);
+    tb.append(h("tr",{class:"clickable",tabindex:"0",onclick:()=>openItem(it.id),onkeydown:e=>{if(e.key==="Enter")openItem(it.id);}},
+      h("td",null,h("span",{class:"code",text:it.code})),
+      h("td",null,h("div",{class:"t",text:it.title}),h("div",{class:"type",text:it.type+(opt.session!==false?" · "+sessionLabel(it):"")})),
+      h("td",{class:"small",text:(STATE.items[it.id]&&STATE.items[it.id].owner)||it.ws}),
+      h("td",{class:"mono small",text:fmtDate(it.due)}),
+      h("td",null,chip(it)),
+      h("td",{class:"r mono small",text:n?String(n):"–"})));
+  });
+  return h("div",{class:"tbl-wrap"},h("table",null,h("thead",null,h("tr",null,h("th",{text:"Ref."}),h("th",{text:"Document"}),h("th",{text:"Owner"}),h("th",{text:"Due"}),h("th",{text:"Status"}),h("th",{class:"r",text:"Files"}))),tb));
+}
+
+function documents(){
+  const v=$("#view");
+  v.append(h("section",{class:"sec"},h("span",{class:"kicker",text:"Library"}),h("h1",{class:"h1",text:"Documents and materials"}),
+    h("p",{class:"lede",text:"Every paper, dashboard, session plan, participant note and presentation, with its owner, due date and review status. Select a row to open or download its files. To post a new version, send it to the TWG secretariat (MSC)."})));
+  const q=h("input",{id:"fq",type:"search",placeholder:"Search title or reference",value:docFilter.q,"aria-label":"Search documents",oninput:e=>{docFilter.q=e.target.value;draw();}});
+  const sel=(id,label,opts,key)=>{const s=h("select",{id,"aria-label":label,onchange:e=>{docFilter[key]=e.target.value;draw();}},h("option",{value:"",text:label}),opts.map(o=>h("option",{value:o[0],text:o[1]})));s.value=docFilter[key];return s;};
+  const f=h("div",{class:"filters"},q,
+    sel("ft","All types",TYPES.filter(t=>t!=="Data request").map(t=>[t,t]),"type"),
+    sel("fd","All days",[["1","Day 1"],["2","Day 2"],["meeting","Whole meeting"]],"day"),
+    sel("fs","All statuses",[["none","Not recorded"],...DOC_ST,["overdue","Overdue"]],"status"));
+  const out=h("div");
+  v.append(f,out);
+  function draw(){
+    const qq=docFilter.q.trim().toLowerCase();
+    const list=I.filter(it=>it.type!=="Data request").filter(it=>{
+      if(qq&&!(it.title+" "+it.code).toLowerCase().includes(qq))return false;
+      if(docFilter.type&&it.type!==docFilter.type)return false;
+      if(docFilter.day){if(docFilter.day==="meeting"){if(!it.sessions.includes("meeting"))return false;}else if(!it.sessions.some(s=>SES[s]&&String(SES[s].day)===docFilter.day))return false;}
+      if(docFilter.status){const st=stOf(it.id);if(docFilter.status==="none"){if(st)return false;}else if(docFilter.status==="overdue"){if(!overdue(it))return false;}else if(st!==docFilter.status)return false;}
+      return true;});
+    out.replaceChildren(list.length?itemTable(list):h("div",{class:"empty",text:"No document matches these filters. Clear a filter to see more."}),h("p",{class:"src",style:"margin-top:8px",text:list.length+" of "+I.filter(it=>it.type!=="Data request").length+" items shown."}));
+  }
+  draw();
+}
+
+function polCard(p){
+  const it=ITEM["br-"+p.p.toLowerCase()];
+  return h("div",{class:"pol"},
+    h("div",{class:"hd"},h("span",{class:"pc",text:p.p}),h("span",{class:"h3",text:p.title}),h("span",{style:"margin-left:auto"},chip(it))),
+    h("p",{text:p.rule}),
+    h("p",{class:"small muted",text:"Evidence: "+p.ev}),
+    h("div",{class:"rec"},h("b",{text:"Recommended option: "}),p.rec),
+    h("div",{class:"row"},h("button",{class:"btn",type:"button",onclick:()=>openItem(it.id),text:"Open policy brief"}),h("a",{href:"#session-"+BLOCK_SES[p.block],class:"small",text:"Block "+p.block+", Day 2"})));
+}
+function policies(){
+  const v=$("#view");
+  v.append(h("section",{class:"sec"},h("span",{class:"kicker",text:"Day 2"}),h("h1",{class:"h1",text:"MEAL implementation policies"}),
+    h("p",{class:"lede",text:"Seven policies proposed for adoption on 20 November. Each answers a documented finding and comes with a two-page brief (paper MEC-09) and decision options."})));
+  ["A","B","C"].forEach(b=>{
+    const s=SES[BLOCK_SES[b]];const g=h("div",{class:"grid g2"});
+    POLICIES.filter(p=>p.block===b).forEach(p=>g.append(polCard(p)));
+    v.append(h("section",{class:"sec"},sectionHead(s.title,h("span",{class:"mono small muted",text:s.time})),g));
+  });
+}
+
+function dataView(){
+  const v=$("#view");
+  v.append(h("section",{class:"sec"},h("span",{class:"kicker",text:"Evidence"}),h("h1",{class:"h1",text:"What the data already show"}),
+    h("p",{class:"lede",text:"First signals from the 2026 Semi-Annual Monitoring exercise and the decision log. Regional aggregates only. Budget and expenditure figures arrive with paper MEC-03."})));
+  const tiles=[["53","budget centres reporting","47 Country Offices and 6 Regional Office budget centres","navy"],["1,336","priority P/S assessed","1,230 at country level","blue"],["96%","on track or completed","13% already completed","teal"],["44","at risk or off track","in 27 budget centres","amber"],["970","decisions logged","800 unique; 91 overdue; none with a root cause","coral"],["84","requests for Regional Office support","from Country Offices","amber"],["46 of 53","budget centres below 75% staff funding coverage","July 2026 analysis","coral"],["1.35%","of financed costs go to MEAL","4.21% of planned costs; gap US$ 39.7 million, provisional","blue"]];
+  v.append(h("div",{class:"grid g4"},tiles.map(t=>h("div",{class:"tile "+t[3]},h("span",{class:"v",text:t[0]}),h("span",{class:"l",text:t[1]}),h("span",{class:"s",text:t[2]})))));
+  // stacked bars by objective
+  const max=Math.max(...OBJ.map(o=>o[2].reduce((a,b)=>a+b,0)));
+  const bars=h("div",{class:"bars"});
+  OBJ.forEach(o=>{
+    const tot=o[2].reduce((a,b)=>a+b,0);const risk=o[2][2]+o[2][3];
+    const tr=h("div",{class:"track",style:"width:"+(tot/max*100)+"%"});
+    o[2].forEach((n,i)=>{if(n>0)tr.append(h("span",{style:"flex:"+n+";background:var("+STATUS_KEYS[i][1]+")",title:STATUS_KEYS[i][0]+": "+n}));});
+    bars.append(h("div",{class:"brow"},h("span",{class:"lab",text:o[0]+" ("+o[1]+")"}),h("div",null,tr),h("span",{class:"val"},h("b",{text:String(tot)})," P/S",risk?h("span",{text:" · "+risk+" at risk"}):null)));
+  });
+  v.append(h("section",{class:"panel sec"},
+    h("h3",{class:"h3",text:"Priority P/S by GPW14 strategic objective and delivery status"}),
+    h("div",{class:"legend"},STATUS_KEYS.map(k=>h("span",null,h("i",{style:"background:var("+k[1]+")"}),k[0]))),
+    bars,
+    h("p",{class:"src",text:"Source: SAM1 platform, export of 16 September 2026; 53 budget centres; P/S with a recorded delivery status. Objective labels are shortened."})));
+  // by type of budget centre
+  const bt=h("div",{class:"tbl-wrap"},h("table",null,
+    h("thead",null,h("tr",null,["","Country Offices","Regional Office budget centres"].map(x=>h("th",{class:x?"r":"",text:x})))),
+    h("tbody",null,[
+      ["Budget centres","47","6"],["Priority P/S assessed","1,230","106"],["Assessments complete","1,173","60"],["Budget centres with all assessments complete","39","2"],
+      ["On track","82.3%","93.2%"],["Completed","13.7%","4.1%"],["At risk or off track","42 in 25 offices","2 in 2 centres"],["Rated a strong contribution (of rated P/S)","82.0%","87.9%"],["Data confirmed","79.8%","84.3%"]
+    ].map(r=>h("tr",null,h("td",{text:r[0]}),h("td",{class:"r mono",text:r[1]}),h("td",{class:"r mono",text:r[2]}))))));
+  // decision log categories
+  const dmax=DLOG_CAT[0][1];const dbars=h("div",{class:"bars"});
+  DLOG_CAT.forEach(c=>dbars.append(h("div",{class:"brow"},h("span",{class:"lab",text:c[0]}),h("div",null,h("div",{class:"track",style:"width:"+(c[1]/dmax*100)+"%"},h("span",{style:"flex:1;background:var(--c-off)"}))),h("span",{class:"val"},h("b",{text:String(c[1])}),h("span",{text:" · "+Math.round(c[1]/935*100)+"%"})))));
+  v.append(h("section",{class:"grid g2"},
+    h("div",{class:"sec"},h("h3",{class:"h3",text:"By type of budget centre"}),bt,h("p",{class:"src",text:"Source: SAM1 2026. Percentages of priority P/S with a recorded status."})),
+    h("div",{class:"panel sec"},h("h3",{class:"h3",text:"Decisions logged, by bottleneck category"}),dbars,
+      h("p",{class:"small",text:"Support required: Country Office 547, Regional Office 84, DPM 6. Severity: critical 12, high 139, medium 618, low 166."}),
+      h("p",{class:"src",text:"Source: SAM1 decision log, final version; 935 of 970 entries classified."}))));
+  v.append(h("section",{class:"sec"},sectionHead("Data requests",h("span",{class:"small muted",text:"Data freeze 30 October 2026"})),dataReqTable()));
+}
+
+function dataReqTable(){
+  const tb=h("tbody");
+  I.filter(it=>it.type==="Data request").forEach(it=>tb.append(h("tr",{class:"clickable",tabindex:"0",onclick:()=>openItem(it.id),onkeydown:e=>{if(e.key==="Enter")openItem(it.id);}},
+    h("td",null,h("span",{class:"code",text:it.code})),h("td",null,h("div",{class:"t",text:it.title}),h("div",{class:"type",text:it.src})),
+    h("td",{class:"small",text:it.owner}),h("td",{class:"small",text:it.ws}),h("td",{class:"mono small",text:fmtDate(it.due)}),h("td",null,chip(it)))));
+  return h("div",{class:"tbl-wrap"},h("table",null,h("thead",null,h("tr",null,["Ref.","Data","Owner","Used by","Due","Status"].map(x=>h("th",{text:x})))),tb));
+}
+
+function twg(){
+  const v=$("#view");
+  v.append(h("section",{class:"sec"},h("span",{class:"kicker",text:"Preparation"}),h("h1",{class:"h1",text:"Technical Working Group and timeline"}),
+    h("p",{class:"lede",text:"The TWG prepares every paper, dashboard and policy brief. DPM chairs it; MSC is the secretariat."})));
+  v.append(h("div",{class:"grid g2"},
+    h("div",{class:"panel sec"},h("span",{class:"kicker",text:"Component A · technical"}),h("p",{text:"About 23 Regional Office staff in six work streams. Remote pre-work from 19 October; face-to-face workshop in Kintele, 11–13 November, ending with a mock MEC."})),
+    h("div",{class:"panel sec"},h("span",{class:"kicker",style:"color:var(--blue)",text:"Component B · review"}),h("p",{text:"Six to eight WRs and three to four senior Regional Office staff. Remote review on 16 November; policy champions at the WR webinar and at the MEC."}))));
+  v.append(h("section",{class:"sec"},sectionHead("Work streams"),h("div",{class:"grid g3"},WS.map(w=>h("div",{class:"panel ws-card"},h("span",{class:"wk",text:w[0]}),h("span",{class:"h3",text:w[1]}),h("p",{class:"small",text:w[2]}),h("p",{class:"small muted",text:"Products: "+w[3]}),h("p",{class:"small muted",text:"Serves: "+w[4]}))))));
+  const t=today();const nextIdx=MILESTONES.findIndex(m=>dateOf((m[4]&&m[4][0])||m[0])>=t);
+  v.append(h("section",{class:"sec"},sectionHead("Road to the MEC and follow-up"),h("div",{class:"panel tl"},MILESTONES.map((m,i)=>tlRow(m,i===nextIdx)))));
+  v.append(h("section",{class:"sec"},sectionHead("Data requests",h("a",{href:"#data",class:"small",text:"See the data"})),dataReqTable()));
+}
+
+/* --------------------------------------------------------- decisions */
+function decisionTable(list){
+  const tb=h("tbody");
+  list.forEach(d=>tb.append(h("tr",null,
+    h("td",null,h("span",{class:"code",text:d.no||""})),
+    h("td",null,h("div",{class:"t",text:d.text||""}),d.indicator?h("div",{class:"type",text:"Evidence of completion: "+d.indicator}):null,d.support?h("div",{class:"type",text:"Support needed: "+d.support}):null),
+    h("td",{class:"small",text:d.owner||""}),h("td",{class:"mono small",text:d.deadline?fmtDate(d.deadline):""}),
+    h("td",null,h("span",{class:"chip "+({"agreed in principle":"st-in-review","confirmed":"st-final","to refine":"st-drafting"}[(d.status||"").toLowerCase()]||"st-none"),text:d.status||"Draft"})))));
+  return h("div",{class:"tbl-wrap"},h("table",null,h("thead",null,h("tr",null,["No.","Decision","Owner (role)","Deadline","Status"].map(x=>h("th",{text:x})))),tb));
+}
+function decisions(){
+  const v=$("#view");
+  v.append(h("section",{class:"sec"},h("span",{class:"kicker",text:"During the meeting"}),h("h1",{class:"h1",text:"Decision record"}),
+    h("p",{class:"lede",text:"Each decision taken at the MEC, by session, with its owner, deadline and evidence of completion. The record feeds Session 7, the outcome statement and the follow-up on 27 November."})));
+  if(!STATE.dbReady){v.append(h("div",{class:"empty",text:"Loading the decision record…"}));return;}
+  const unplaced=STATE.decisions.filter(d=>!SES[d.session]);
+  if(!STATE.decisions.length){v.append(h("div",{class:"empty",text:"No decision recorded yet. During the meeting the rapporteurs keep the record and the TWG secretariat posts it here after each session."}));return;}
+  SESSIONS.filter(s=>!s.brk).forEach(s=>{const ds=STATE.decisions.filter(d=>d.session===s.id);if(ds.length)v.append(h("section",{class:"sec"},sectionHead(s.code+" · "+s.title,h("span",{class:"small muted",text:ds.length+" decision"+(ds.length>1?"s":"")})),decisionTable(ds)));});
+  if(unplaced.length)v.append(h("section",{class:"sec"},sectionHead("Other decisions"),decisionTable(unplaced)));
+}
+
+/* ------------------------------------------------------------- drawer */
+let OPEN_ID=null;
+function openItem(id){OPEN_ID=id;renderDrawer();$("#drawer").hidden=false;$("#scrim").hidden=false;setTimeout(()=>{const c=$("#dClose");if(c)c.focus();},0);}
+function closeDrawer(){OPEN_ID=null;$("#drawer").hidden=true;$("#scrim").hidden=true;}
+$("#scrim").addEventListener("click",closeDrawer);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&OPEN_ID)closeDrawer();});
+
+function renderDrawer(){
+  const it=ITEM[OPEN_ID];if(!it)return;
+  const r=STATE.items[it.id]||{};
+  const d=$("#drawer");d.replaceChildren();
+  d.append(h("div",{class:"dh"},
+    h("div",{class:"sec",style:"gap:4px;min-width:0"},h("div",{class:"row",style:"gap:8px"},h("span",{class:"code",text:it.code}),h("span",{class:"type",text:it.type})),h("h2",{class:"h2",id:"dTitle",text:it.title})),
+    h("button",{class:"btn",type:"button",id:"dClose",onclick:closeDrawer,"aria-label":"Close"},"Close")));
+  const body=h("div",{class:"db"});
+  body.append(h("p",{text:it.desc}));
+  body.append(h("div",{class:"facts f3"},
+    h("div",null,h("span",{class:"l",text:"Session"}),it.sessions.map(sid=>SES[sid]?h("a",{href:"#session-"+sid,onclick:closeDrawer,text:"Day "+SES[sid].day+" · "+SES[sid].code+" "}):h("span",{text:sid==="meeting"?"Whole meeting":"TWG"}))),
+    h("div",null,h("span",{class:"l",text:"Due"}),h("span",{class:"mono",text:fmtDate(it.due)+" "+(it.due||"").slice(0,4)})),
+    h("div",null,h("span",{class:"l",text:"Status"}),chip(it))));
+  const files=h("div",{class:"files"});
+  (r.files||[]).forEach(name=>{
+    const href=CONFIG.docsFolder+encodeURIComponent(name);
+    const ext=(name.split(".").pop()||"").toUpperCase();
+    files.append(h("div",{class:"file"},h("span",{class:"fn",text:name}),h("span",{class:"row",style:"gap:6px"},
+      h("span",{class:"type",text:ext}),
+      h("a",{class:"btn",href,target:"_blank",rel:"noopener"},"Open"),
+      h("a",{class:"btn",href,download:name},"Download"))));
+  });
+  if(!files.childElementCount)files.append(h("div",{class:"empty",text:"No file posted yet."}));
+  body.append(h("div",{class:"sec",style:"gap:8px"},h("span",{class:"flabel",text:"Files"}),files));
+  if(r.link&&/^https:\/\//i.test(r.link))body.append(h("div",{class:"sec",style:"gap:4px"},h("span",{class:"flabel",text:"Working file"}),h("a",{href:r.link,target:"_blank",rel:"noopener noreferrer",text:r.link,style:"word-break:break-all"})));
+  body.append(h("div",{class:"sec",style:"gap:6px"},h("span",{class:"flabel",text:"Review"}),
+    h("p",{class:"small",text:"Owner: "+(r.owner||it.ws)+(r.reviewer?" · Reviewer: "+r.reviewer:"")}),
+    r.note?h("p",{class:"small",text:r.note}):null,
+    r.updated?h("p",{class:"small muted",text:"Status recorded on "+fmtDate(r.updated)+" "+r.updated.slice(0,4)}):null));
+  body.append(h("div",{class:"callout amber"},h("p",{class:"small"},"To post a new version or change this status, send it to the "+CONFIG.contact+".",
+    CONFIG.updateFormUrl?h("span",null," ",h("a",{href:CONFIG.updateFormUrl,target:"_blank",rel:"noopener",text:"Use the update form"}),"."):null)));
+  d.append(body);
+}
+
+/* ------------------------------------------------------------- data */
+const ST_KEY={"not started":"not-started","not-started":"not-started","drafting":"drafting","in review":"in-review","in-review":"in-review","final":"final","requested":"requested","partly received":"partial","partial":"partial","received":"received","issue":"issue"};
+function normDate(s){
+  s=(s||"").trim();if(!s)return "";
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return m[1]+"-"+m[2].padStart(2,"0")+"-"+m[3].padStart(2,"0");
+  m=s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/);if(m)return m[3]+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0");
+  return "";
+}
+function parseCSV(text){
+  text=text.replace(/^﻿/,"");
+  const first=text.split(/\r?\n/,1)[0]||"";
+  const sep=(first.split(";").length>first.split(",").length)?";":",";
+  const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;continue;}
+    if(c==='"'){q=true;continue;}
+    if(c===sep){row.push(f);f="";continue;}
+    if(c==="\n"||c==="\r"){if(c==="\r"&&text[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f="";continue;}
+    f+=c;
+  }
+  if(f!==""||row.length){row.push(f);rows.push(row);}
+  const head=(rows.shift()||[]).map(x=>x.trim().toLowerCase());
+  return rows.filter(r=>r.some(x=>x.trim()!=="")).map(r=>Object.fromEntries(head.map((k,i)=>[k,(r[i]||"").trim()])));
+}
+const SES_KEY={};
+SESSIONS.filter(s=>!s.brk).forEach(s=>{[s.id,s.code,"d"+s.day+s.code,"day"+s.day+s.code,s.title,"block"+s.code].forEach(k=>{SES_KEY[String(k).toLowerCase().replace(/[\s.·-]/g,"")]=s.id;});});
+function sessionOf(v){return SES_KEY[String(v||"").toLowerCase().replace(/[\s.·-]/g,"")]||String(v||"");}
+function applyRows(rows){
+  const m={};
+  rows.forEach(x=>{
+    const it=ITEM[x.id];if(!it)return;
+    const due=normDate(x.due);if(due)it.due=due;
+    m[x.id]={status:ST_KEY[(x.status||"").toLowerCase()]||null,owner:x.owner||"",reviewer:x.reviewer||"",note:x.note||"",link:x.link||"",updated:normDate(x.updated),files:(x.files||"").split("|").map(s=>s.trim()).filter(Boolean)};
+  });
+  return m;
+}
+async function loadData(){
+  let note="";
+  try{
+    const r=await fetch(CONFIG.trackerFile,{cache:"no-store"});if(!r.ok)throw new Error("tracker");
+    STATE.items=applyRows(parseCSV(await r.text()));
+  }catch(e){
+    const m={};Object.entries(EMBED).forEach(([k,v])=>{m[k]=Object.assign({},v,{status:ST_KEY[(v.status||"").toLowerCase()]||null});});
+    STATE.items=m;note="Showing the statuses published with this page.";
+  }
+  try{
+    const r=await fetch(CONFIG.decisionsFile,{cache:"no-store"});
+    if(r.ok)STATE.decisions=parseCSV(await r.text()).filter(d=>d.decision).map(d=>({no:d.no,session:sessionOf(d.session),text:d.decision,owner:d.owner,deadline:normDate(d.deadline),indicator:d.evidence,support:d.support,status:d.status})).sort((a,b)=>String(a.no).localeCompare(String(b.no)));
+  }catch(e){}
+  STATE.dbReady=true;STATE.dbNote=note;
+  const last=Object.values(STATE.items).map(r=>r.updated).filter(Boolean).sort().pop();
+  $("#whoLine").textContent=last?"Statuses as of "+fmtDate(last):(note||"Statuses not yet recorded");
+  rerender();
+}
+
+/* ------------------------------------------------------------- start */
+function tick(){const d=Math.ceil((MEC_START-new Date())/86400000);$("#countDays").textContent=d>0?String(d):"0";if(d<=0)$("#countPill").textContent="MEC in session or held";}
+window.addEventListener("hashchange",()=>{if(OPEN_ID)closeDrawer();route();window.scrollTo(0,0);});
+tick();route();loadData();
+})();
+</script>
+</body>
+</html>
