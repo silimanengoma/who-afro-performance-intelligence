@@ -23,3 +23,15 @@ Data requests: Requested, Partly received, Received, Issue.
 Dates: 2026-11-17 or 17/11/2026.
 
 Note: this page is public. Anyone with the link can read it.
+
+## Plan RH 2028-2029 (OMS RDC)
+
+`planrh2028/index.html` is a standalone tool, published at
+https://silimanengoma.github.io/who-afro-performance-intelligence/planrh2028/
+
+It holds no data. Team Leads load the XLSX template sent by the PMO through
+internal email, record their position proposals for 2028-2029, and export a
+return file. The PMO consolidates the files, the WR validates or rejects each
+proposal, and the retained positions export to XLSX for SPM costing.
+Everything stays in the user's browser and files; nothing is sent to a server.
+Do not commit the workforce plan or any return file to this repository.
