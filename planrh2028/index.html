@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Plan RH 2028-2029 · OMS RDC</title>
-<meta name="description" content="Propositions de positions des Team Leads, validation par la WR et export XLSX pour le costing du budget programme 2028-2029. Outil sans données : il lit et écrit des fichiers XLSX.">
+<meta name="description" content="Propositions de positions des Team Leads, validation par la WR et export XLSX pour le costing du budget programme 2028-2029. Accès réservé aux comptes créés par le PMO.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -240,9 +240,14 @@ td.r,th.r{text-align:right}
 .drop:hover,.drop.over{border-color:var(--teal);background:var(--teal-bg)}
 .drop:focus-within{outline:2px solid var(--focus);outline-offset:2px}
 
+
+body.anon .rail{display:none}
+body.anon .shell{grid-template-columns:1fr}
+body.anon #pill-count{display:none}
+#rail-pmo[hidden]{display:none}
 </style>
 </head>
-<body>
+<body class="anon">
 <header class="top">
   <div class="top-in">
     <div class="brand">
@@ -262,19 +267,21 @@ td.r,th.r{text-align:right}
     <a href="#apercu" data-view="apercu"><span class="k">00</span>Aperçu</a>
     <div class="sep"></div>
     <div class="group">Travail</div>
-    <a href="#fichiers" data-view="fichiers"><span class="k">01</span>Fichiers</a>
-    <a href="#propositions" data-view="propositions"><span class="k">02</span>Propositions<span class="n" id="n-prop"></span></a>
-    <a href="#validation" data-view="validation"><span class="k">03</span>Validation WR<span class="n" id="n-wait"></span></a>
-    <a href="#export" data-view="export"><span class="k">04</span>Export XLSX<span class="n" id="n-ret"></span></a>
+    <a href="#propositions" data-view="propositions"><span class="k">01</span>Propositions<span class="n" id="n-prop"></span></a>
+    <a href="#validation" data-view="validation"><span class="k">02</span>Validation WR<span class="n" id="n-wait"></span></a>
+    <a href="#export" data-view="export"><span class="k">03</span>Export XLSX<span class="n" id="n-ret"></span></a>
     <div class="sep"></div>
-    <a href="#mode-emploi" data-view="mode-emploi"><span class="k">05</span>Mode d'emploi</a>
+    <div id="rail-pmo" hidden><a href="#acces" data-view="acces"><span class="k">04</span>Accès</a></div>
+    <a href="#compte" data-view="compte"><span class="k">05</span>Mon compte</a>
+    <a href="#mode-emploi" data-view="mode-emploi"><span class="k">06</span>Mode d'emploi</a>
     <div class="sep"></div>
-    <p class="note">Aucune donnée n'est stockée sur ce site : la plateforme lit le gabarit XLSX envoyé par le PMO et garde vos saisies dans ce navigateur.</p>
+    <p class="note">Données enregistrées dans une base sécurisée, accessible aux seuls comptes créés par le PMO. Chaque modification est tracée.</p>
   </nav>
   <main><div class="wrap" id="view"></div></main>
 </div>
 <div id="layer"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 "use strict";
 const TEAMS = {
@@ -355,427 +362,377 @@ const MILESTONES = [
 ];
 
 
-/* ---------- file schema (gabarit, retours et fichier consolidé partagent le même format) ---------- */
+/* ---------- Supabase ---------- */
+const SB_URL = "https://dcfbldyjerfiavbpuhsl.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZmJsZHlqZXJmaWF2YnB1aHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4ODA5NzUsImV4cCI6MjEwOTQ1Njk3NX0.NKCZJwtGyg2lh_W6o3lpK1NfzafH8v9O1lmC7lIOs_0";
+const sb = (typeof supabase!=="undefined") ? supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:true, autoRefreshToken:true}}) : null;
+
 const SHEET = "Plan RH";
 const COLS = ["ID position","Équipe","Unité SPM","Intitulé 2026-2027","Grade 2026-2027","Lieu 2026-2027","FTE 2026-2027","Contrat","Occupation",
   "Proposition","Intitulé 2028-2029","Grade 2028-2029","Lieu 2028-2029","FTE 2028-2029","Segment","Output 1","% output 1","Output 2","% output 2","Output 3","% output 3",
   "Justification","Proposé par","Date proposition","Décision WR","Commentaire WR","Décidé par","Date décision","Version validée"];
 const TEAM_BY_LABEL = Object.fromEntries(Object.entries(TEAMS).map(([k,v])=>[v.label.toLowerCase(),k]));
-const ACT_BY_LABEL = {maintenir:"maintenir",reconvertir:"reconvertir",supprimer:"supprimer",créer:"creer",creer:"creer"};
-const STORE_KEY = "prh2028-v1", PROFILE_KEY = "prh2028-profile";
 
 /* ---------- state ---------- */
-const S = { positions:[], proposals:{}, decisions:{}, files:[], view:"apercu", openId:null, draft:null,
-  f:{team:"", status:"", q:""}, vf:{team:"", status:"wait"}, profile:{role:"", name:"", team:""}, lastImport:null, confirmReset:false };
-function load(){
-  try{ const d=JSON.parse(localStorage.getItem(STORE_KEY)||"null"); if(d){ S.positions=d.positions||[]; S.proposals=d.proposals||{}; S.decisions=d.decisions||{}; S.files=d.files||[]; } }catch(e){}
-  try{ const p=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null"); if(p) S.profile=p; }catch(e){}
-  if(S.profile.role==="tl" && S.profile.team) S.f.team=S.profile.team;
-}
-let storageOk=true;
-function persist(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify({positions:S.positions,proposals:S.proposals,decisions:S.decisions,files:S.files})); storageOk=true; }catch(e){ storageOk=false; } }
-function persistProfile(){ try{ localStorage.setItem(PROFILE_KEY, JSON.stringify(S.profile)); }catch(e){} }
+const S = { session:null, me:null, positions:[], proposals:{}, decisions:{}, members:[], baseline:null, loading:true, authErr:"", netErr:"",
+  view:"apercu", openId:null, draft:null, f:{team:"", status:"", q:""}, vf:{team:"", status:"wait"}, lastImport:null, newPw:null, busy:false };
 
 const $ = (s,el=document)=>el.querySelector(s);
 const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmtDate = iso => { if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return esc(iso); return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}); };
-function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.setAttribute("role","status"); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2800); }
-const isEditorRole = ()=> S.profile.role==="wr" || S.profile.role==="pmo";
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.setAttribute("role","status"); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+const role = ()=> S.me?.role||"";
+const isEditor = ()=> role()==="wr"||role()==="pmo";
 const roleLabel = r => ({tl:"Team Lead", wr:"WR", pmo:"PMO"})[r]||"";
+const canEditRow = r => role()==="pmo" || (role()==="tl" && r.team===S.me.team);
+function errMsg(e){ const m=(e&&(e.message||e.error_description))||""; if(/row-level security|permission denied/i.test(m)) return "Votre accès ne permet pas cette action."; if(/Failed to fetch|NetworkError/i.test(m)) return "Connexion impossible. Vérifiez Internet et réessayez."; return m||"L'opération a échoué. Réessayez."; }
+
+/* ---------- data ---------- */
+function mapProp(p){ return {posId:p.pos_id, isNew:p.is_new, action:p.action, team:p.team, title:p.title, grade:p.grade, station:p.station, fte:p.fte, segment:p.segment, outputs:p.outputs||[], justification:p.justification, updatedAt:p.updated_at, updatedBy:p.updated_by_name||""}; }
+function mapDec(d){ return {decision:d.decision, comment:d.comment, basedOn:d.based_on, decidedAt:d.decided_at, decidedBy:d.decided_by_name||""}; }
+async function loadTable(t){
+  if(t==="positions"){ const {data,error}=await sb.from("positions").select("*").order("id"); if(error) throw error; S.positions=data; }
+  if(t==="proposals"){ const {data,error}=await sb.from("proposals").select("*"); if(error) throw error; S.proposals=Object.fromEntries(data.map(p=>[p.pos_id,mapProp(p)])); }
+  if(t==="decisions"){ const {data,error}=await sb.from("decisions").select("*"); if(error) throw error; S.decisions=Object.fromEntries(data.map(d=>[d.pos_id,mapDec(d)])); }
+  if(t==="settings"){ const {data,error}=await sb.from("settings").select("*").eq("key","baseline").maybeSingle(); if(error) throw error; S.baseline=data?data.value:null; }
+  if(t==="members"){ const {data,error}=await sb.from("members").select("*").order("role").order("name"); if(error) throw error; S.members=data; }
+}
+async function loadAll(){
+  try{ S.netErr=""; await Promise.all(["positions","proposals","decisions","settings","members"].map(loadTable)); }
+  catch(e){ S.netErr=errMsg(e); }
+  S.loading=false; render();
+}
+const pending={}; let channel=null;
+function subscribe(){
+  if(channel) return;
+  channel=sb.channel("planrh").on("postgres_changes",{event:"*",schema:"public"},p=>{
+    const t=p.table; clearTimeout(pending[t]); pending[t]=setTimeout(async()=>{ try{ await loadTable(t); if(t==="positions") await loadTable("settings"); }catch(e){} if(!S.openId) render(); else renderBehind(); },400);
+  }).subscribe();
+}
+function renderBehind(){ const keep=S.openId; render(); S.openId=keep; }
+
+/* ---------- auth ---------- */
+async function afterSession(session){
+  S.session=session; S.me=null;
+  if(!session){ S.loading=false; render(); return; }
+  const {data,error}=await sb.from("members").select("*").eq("user_id",session.user.id).maybeSingle();
+  if(error){ S.authErr=errMsg(error); S.loading=false; render(); return; }
+  if(!data||!data.active){ S.me=null; S.authErr="Ce compte n'a pas accès à la plateforme. Contactez le PMO."; S.loading=false; render(); return; }
+  S.me=data; if(data.role==="tl") S.f.team=data.team;
+  S.loading=true; render(); await loadAll(); subscribe();
+}
+async function signIn(email,pw){
+  S.authErr=""; const {data,error}=await sb.auth.signInWithPassword({email:email.trim().toLowerCase(), password:pw});
+  if(error){ S.authErr = /Invalid login/i.test(error.message)?"Adresse e-mail ou mot de passe incorrect.":errMsg(error); render(); return; }
+  await afterSession(data.session);
+}
+async function signOut(){ await sb.auth.signOut(); if(channel){ sb.removeChannel(channel); channel=null; } S.session=null; S.me=null; S.positions=[]; S.proposals={}; S.decisions={}; S.members=[]; render(); }
 
 /* ---------- derived rows ---------- */
 function rows(){
-  const base = S.positions.map(p=>({...p, isNew:false}));
-  const news = Object.entries(S.proposals).filter(([id,p])=>p.isNew && !S.positions.some(x=>x.id===id)).map(([id,p])=>({id, title:p.title, grade:p.grade, station:p.station, fte:p.fte, contract:"Nouvelle", occupied:false, unit:"Nouvelle position", team:p.team, isNew:true}));
+  const base=S.positions.map(p=>({...p, isNew:false}));
+  const news=Object.entries(S.proposals).filter(([id,p])=>p.isNew).map(([id,p])=>({id,title:p.title,grade:p.grade,station:p.station,fte:p.fte,contract:"Nouvelle",occupied:false,unit:"Nouvelle position",team:p.team,isNew:true}));
   return base.concat(news).map(r=>{
-    const p = S.proposals[r.id]||null, d = S.decisions[r.id]||null;
-    let st="ns";
-    if(p && p.action){ if(!d || d.basedOn!==p.updatedAt) st = d ? "stale" : "wait"; else st = d.decision==="valide" ? "done" : "rej"; }
-    const team = p?.team || r.team;
-    const eff = p && (p.action==="reconvertir"||p.action==="creer") ? {title:p.title||r.title, grade:p.grade||r.grade, station:p.station||r.station} : {title:r.title, grade:r.grade, station:r.station};
-    return {...r, team, p, d, st, eff};
+    const p=S.proposals[r.id]||null, d=S.decisions[r.id]||null; let st="ns";
+    if(p&&p.action){ if(!d||new Date(d.basedOn).getTime()!==new Date(p.updatedAt).getTime()) st=d?"stale":"wait"; else st=d.decision==="valide"?"done":"rej"; }
+    const team=p?.team||r.team;
+    const eff=p&&(p.action==="reconvertir"||p.action==="creer")?{title:p.title||r.title,grade:p.grade||r.grade,station:p.station||r.station}:{title:r.title,grade:r.grade,station:r.station};
+    return {...r,team,p,d,st,eff};
   });
 }
-const STL = {ns:"À proposer", wait:"En attente WR", stale:"Modifiée après décision", done:"Validée", rej:"Rejetée"};
-const stChip = st => `<span class="chip st-${st}">${STL[st]}</span>`;
-const actTag = a => a ? `<span class="act ${a}">${ACTIONS[a]}</span>` : `<span class="muted small">–</span>`;
-const isRetained = r => r.st==="done" && r.p && r.p.action!=="supprimer";
+const STL={ns:"À proposer",wait:"En attente WR",stale:"Modifiée après décision",done:"Validée",rej:"Rejetée"};
+const stChip=st=>`<span class="chip st-${st}">${STL[st]}</span>`;
+const actTag=a=>a?`<span class="act ${a}">${ACTIONS[a]}</span>`:`<span class="muted small">–</span>`;
+const isRetained=r=>r.st==="done"&&r.p&&r.p.action!=="supprimer";
 
-/* ---------- XLSX import ---------- */
-function cell(v){ return v==null ? "" : String(v).trim(); }
-function num(v,d){ const n=Number(String(v??"").replace("%","").replace(",",".")); return isFinite(n)&&String(v??"").trim()!==""?n:d; }
-async function importFiles(fileList){
-  if(typeof XLSX==="undefined"){ S.lastImport={ok:false, lines:["La bibliothèque XLSX ne s'est pas chargée. Vérifiez la connexion Internet puis rechargez la page."]}; render(); return; }
-  const report=[];
-  for(const file of fileList){
-    try{
-      const wb=XLSX.read(await file.arrayBuffer(),{type:"array"});
-      const ws=wb.Sheets[SHEET];
-      if(!ws){ report.push(`« ${file.name} » : onglet « ${SHEET} » introuvable. Utilisez le gabarit ou un fichier exporté par la plateforme.`); continue; }
-      const data=XLSX.utils.sheet_to_json(ws,{defval:"",raw:false});
-      const fallbackDate=new Date(file.lastModified||Date.now()).toISOString();
-      let nPos=0,nNewPos=0,nProp=0,nDec=0; const warn=[];
-      data.forEach((row,i)=>{
-        const id=cell(row["ID position"]); if(!id) return;
-        const teamRaw=cell(row["Équipe"]).toLowerCase(); const team=TEAM_BY_LABEL[teamRaw]||(TEAMS[teamRaw.toUpperCase()]?teamRaw.toUpperCase():"");
-        const isNew=/^N-/.test(id);
-        if(!isNew){
-          let pos=S.positions.find(x=>x.id===id);
-          if(!pos){ pos={id, title:cell(row["Intitulé 2026-2027"]), grade:cell(row["Grade 2026-2027"]), station:cell(row["Lieu 2026-2027"]), fte:num(row["FTE 2026-2027"],100),
-            contract:cell(row["Contrat"]), occupied:cell(row["Occupation"]).toLowerCase().startsWith("occup"), unit:cell(row["Unité SPM"]), team:team||"OPS"}; S.positions.push(pos); nNewPos++; }
-          nPos++;
-        }
-        const act=ACT_BY_LABEL[cell(row["Proposition"]).toLowerCase()]||"";
-        if(act){
-          const outs=[]; for(let k=1;k<=3;k++){ const c=cell(row["Output "+k]).slice(0,11); if(c){ if(!OUT[c]) warn.push(`ligne ${i+2} : output ${c} inconnu`); outs.push({code:c,pct:num(row["% output "+k],0)}); } }
-          const prop={ posId:id, isNew, action:act, team:team||(S.positions.find(x=>x.id===id)?.team)||"",
-            title:cell(row["Intitulé 2028-2029"])||cell(row["Intitulé 2026-2027"]), grade:cell(row["Grade 2028-2029"])||cell(row["Grade 2026-2027"]),
-            station:cell(row["Lieu 2028-2029"])||cell(row["Lieu 2026-2027"]), fte:num(row["FTE 2028-2029"],num(row["FTE 2026-2027"],100)),
-            segment:act==="supprimer"?"":cell(row["Segment"]), outputs:act==="supprimer"?[]:outs, justification:cell(row["Justification"]),
-            updatedAt:cell(row["Date proposition"])||fallbackDate, updatedBy:cell(row["Proposé par"]) };
-          if(act!=="supprimer"){ const sum=outs.reduce((s,o)=>s+o.pct,0); if(outs.length && sum!==100) warn.push(`ligne ${i+2} (${id}) : répartition des outputs = ${sum} %`); }
-          const cur=S.proposals[id];
-          if(!cur || prop.updatedAt>cur.updatedAt){ S.proposals[id]=prop; nProp++; }
-        }
-        const decRaw=cell(row["Décision WR"]).toLowerCase();
-        const dec = decRaw.startsWith("valid")?"valide":decRaw.startsWith("rejet")?"rejete":"";
-        if(dec){
-          const d={decision:dec, comment:cell(row["Commentaire WR"]), decidedBy:cell(row["Décidé par"]), decidedAt:cell(row["Date décision"])||fallbackDate,
-            basedOn:cell(row["Version validée"])||(S.proposals[id]?.updatedAt||"")};
-          const cur=S.decisions[id];
-          if(!cur || d.decidedAt>cur.decidedAt){ S.decisions[id]=d; nDec++; }
-        }
-      });
-      S.files.push({name:file.name, at:new Date().toISOString()}); if(S.files.length>30) S.files=S.files.slice(-30);
-      report.push(`« ${file.name} » : ${nPos} positions lues${nNewPos?` (dont ${nNewPos} ajoutées au plan)`:""}, ${nProp} proposition${nProp>1?"s":""} et ${nDec} décision${nDec>1?"s":""} prises en compte.`+(warn.length?` ${warn.length} point${warn.length>1?"s":""} à vérifier : ${warn.slice(0,4).join(" ; ")}${warn.length>4?"…":""}.`:""));
-    }catch(e){ report.push(`« ${file.name} » : fichier illisible. Enregistrez-le au format .xlsx et réessayez.`); }
-  }
-  persist(); S.lastImport={ok:true, lines:report}; render();
+/* ---------- baseline import (PMO, once) ---------- */
+const cell=v=>v==null?"":String(v).trim();
+function num(v,d){ const s=String(v??"").replace("%","").replace(",",".").trim(); const n=Number(s); return s!==""&&isFinite(n)?n:d; }
+async function importBaseline(file){
+  if(typeof XLSX==="undefined"){ S.lastImport={ok:false,text:"La bibliothèque XLSX ne s'est pas chargée. Rechargez la page."}; render(); return; }
+  try{
+    const wb=XLSX.read(await file.arrayBuffer(),{type:"array"}); const ws=wb.Sheets[SHEET];
+    if(!ws){ S.lastImport={ok:false,text:`Onglet « ${SHEET} » introuvable dans « ${file.name} ». Utilisez le gabarit.`}; render(); return; }
+    const data=XLSX.utils.sheet_to_json(ws,{defval:"",raw:false}); const seen=new Set(); const out=[];
+    for(const row of data){ const id=cell(row["ID position"]); if(!id||/^N-/.test(id)||seen.has(id)) continue; seen.add(id);
+      const t=cell(row["Équipe"]).toLowerCase(); const team=TEAM_BY_LABEL[t]||(TEAMS[t.toUpperCase()]?t.toUpperCase():"OPS");
+      out.push({id,title:cell(row["Intitulé 2026-2027"]),grade:cell(row["Grade 2026-2027"]),station:cell(row["Lieu 2026-2027"]),fte:num(row["FTE 2026-2027"],100),contract:cell(row["Contrat"]),occupied:cell(row["Occupation"]).toLowerCase().startsWith("occup"),unit:cell(row["Unité SPM"]),team}); }
+    if(!out.length){ S.lastImport={ok:false,text:"Aucune position trouvée dans le fichier."}; render(); return; }
+    S.pendingBaseline={file:file.name,rows:out}; S.lastImport=null; render();
+  }catch(e){ S.lastImport={ok:false,text:`« ${file.name} » est illisible. Enregistrez-le en .xlsx et réessayez.`}; render(); }
+}
+async function confirmBaseline(){
+  const pb=S.pendingBaseline; if(!pb) return; S.busy=true; render();
+  const {data,error}=await sb.rpc("load_baseline",{rows:pb.rows});
+  S.busy=false; S.pendingBaseline=null;
+  if(error){ S.lastImport={ok:false,text:errMsg(error)}; render(); return; }
+  await Promise.all(["positions","settings"].map(loadTable)); S.lastImport={ok:true,text:`${data} positions chargées et verrouillées. Les Team Leads peuvent commencer.`}; render();
 }
 
-/* ---------- XLSX export ---------- */
-function schemaRow(r){
-  const p=r.p||{}, d=r.d||{}, o=p.outputs||[];
-  return { "ID position":r.id, "Équipe":TEAMS[r.team]?.label||r.team, "Unité SPM":r.unit||"", "Intitulé 2026-2027":r.isNew?"":r.title, "Grade 2026-2027":r.isNew?"":r.grade, "Lieu 2026-2027":r.isNew?"":r.station,
-    "FTE 2026-2027":r.isNew?"":r.fte, "Contrat":r.contract||"", "Occupation":r.isNew?"":(r.occupied?"Occupé":"Vacant"),
-    "Proposition":p.action?ACTIONS[p.action]:"", "Intitulé 2028-2029":p.action?r.eff.title:"", "Grade 2028-2029":p.action?r.eff.grade:"", "Lieu 2028-2029":p.action?r.eff.station:"", "FTE 2028-2029":p.action?(p.fte??r.fte):"",
-    "Segment":p.segment||"", "Output 1":o[0]?.code||"", "% output 1":o[0]?.pct??"", "Output 2":o[1]?.code||"", "% output 2":o[1]?.pct??"", "Output 3":o[2]?.code||"", "% output 3":o[2]?.pct??"",
-    "Justification":p.justification||"", "Proposé par":p.updatedBy||"", "Date proposition":p.updatedAt||"",
-    "Décision WR":d.decision==="valide"?"Validée":d.decision==="rejete"?"Rejetée":"", "Commentaire WR":d.comment||"", "Décidé par":d.decidedBy||"", "Date décision":d.decidedAt||"", "Version validée":d.basedOn||"" };
-}
+/* ---------- exports ---------- */
+function schemaRow(r){ const p=r.p||{}, d=r.d||{}, o=p.outputs||[];
+  return {"ID position":r.id,"Équipe":TEAMS[r.team]?.label||r.team,"Unité SPM":r.unit||"","Intitulé 2026-2027":r.isNew?"":r.title,"Grade 2026-2027":r.isNew?"":r.grade,"Lieu 2026-2027":r.isNew?"":r.station,
+    "FTE 2026-2027":r.isNew?"":r.fte,"Contrat":r.contract||"","Occupation":r.isNew?"":(r.occupied?"Occupé":"Vacant"),"Proposition":p.action?ACTIONS[p.action]:"",
+    "Intitulé 2028-2029":p.action?r.eff.title:"","Grade 2028-2029":p.action?r.eff.grade:"","Lieu 2028-2029":p.action?r.eff.station:"","FTE 2028-2029":p.action?(p.fte??r.fte):"","Segment":p.segment||"",
+    "Output 1":o[0]?.code||"","% output 1":o[0]?.pct??"","Output 2":o[1]?.code||"","% output 2":o[1]?.pct??"","Output 3":o[2]?.code||"","% output 3":o[2]?.pct??"",
+    "Justification":p.justification||"","Proposé par":p.updatedBy||"","Date proposition":p.updatedAt||"","Décision WR":d.decision==="valide"?"Validée":d.decision==="rejete"?"Rejetée":"",
+    "Commentaire WR":d.comment||"","Décidé par":d.decidedBy||"","Date décision":d.decidedAt||"","Version validée":d.basedOn||""}; }
 const WIDTHS=[13,26,24,40,9,13,8,11,10,12,40,9,13,8,26,13,7,13,7,13,7,50,22,24,12,40,22,24,24];
-function stamp(){ const d=new Date(); return d.toISOString().slice(0,10); }
-function exportSchema(scope){
-  if(typeof XLSX==="undefined"){ toast("La bibliothèque XLSX ne s'est pas chargée."); return; }
-  let R=rows(); if(scope==="team" && S.profile.team) R=R.filter(r=>r.team===S.profile.team);
-  const wb=XLSX.utils.book_new(); const ws=XLSX.utils.json_to_sheet(R.map(schemaRow),{header:COLS}); ws["!cols"]=WIDTHS.map(w=>({wch:w})); ws["!autofilter"]={ref:ws["!ref"]};
-  XLSX.utils.book_append_sheet(wb,ws,SHEET);
-  const ref=XLSX.utils.json_to_sheet(OUTPUTS.map(o=>({"Output":o[0],"Outcome":OUTCOMES[o[0].slice(0,6)],"Priorité RDC":PRIO_L[o[2]],"Libellé SPM (début)":o[1]}))); ref["!cols"]=[{wch:13},{wch:44},{wch:12},{wch:80}];
-  XLSX.utils.book_append_sheet(wb,ref,"Outputs GPW14");
-  const who = scope==="team" ? (S.profile.team||"equipe") : "consolide";
-  XLSX.writeFile(wb,`AF_COD_PlanRH2028-2029_${who}_${stamp()}.xlsx`);
-  toast("Fichier exporté");
-}
+const stamp=()=>new Date().toISOString().slice(0,10);
+function exportAll(){ if(typeof XLSX==="undefined") return toast("La bibliothèque XLSX ne s'est pas chargée.");
+  const wb=XLSX.utils.book_new(); const ws=XLSX.utils.json_to_sheet(rows().map(schemaRow),{header:COLS}); ws["!cols"]=WIDTHS.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,SHEET);
+  XLSX.writeFile(wb,`AF_COD_PlanRH2028-2029_consolide_${stamp()}.xlsx`); toast("Fichier exporté"); }
 function exportRows(R){ return R.filter(isRetained).sort((a,b)=>TEAM_ORDER.indexOf(a.team)-TEAM_ORDER.indexOf(b.team)||a.eff.title.localeCompare(b.eff.title)); }
-function exportFinal(){
-  if(typeof XLSX==="undefined"){ toast("La bibliothèque XLSX ne s'est pas chargée."); return; }
+function exportFinal(){ if(typeof XLSX==="undefined") return toast("La bibliothèque XLSX ne s'est pas chargée.");
   const R=rows(), X=exportRows(R);
   const outCols=r=>{ const o=r.p.outputs||[]; const c={}; for(let i=0;i<3;i++){ c[`Output ${i+1}`]=o[i]?.code||""; c[`Output ${i+1} - outcome`]=o[i]?OUT[o[i].code]?.outcome||"":""; c[`Output ${i+1} - %`]=o[i]?.pct??""; c[`Output ${i+1} - priorité`]=o[i]?PRIO_L[OUT[o[i].code]?.prio]||"":""; } return c; };
-  const s1=X.map(r=>({ "Position SPM": r.isNew?"Nouvelle":r.id, "Intitulé 2028-2029": r.eff.title, "Intitulé 2026-2027": r.isNew?"":r.title, "Grade": r.eff.grade, "Lieu d'affectation": r.eff.station,
-    "FTE (%)": r.p.fte??r.fte, "Action": ACTIONS[r.p.action], "Équipe": TEAMS[r.team]?.label||r.team, "Segment": r.p.segment, ...outCols(r),
-    "Outputs (résumé)": (r.p.outputs||[]).map(o=>o.code+" ("+o.pct+"%)").join("; "), "Justification": r.p.justification, "Commentaire WR": r.d?.comment||"", "Validée le": r.d?.decidedAt?new Date(r.d.decidedAt).toLocaleDateString("fr-FR"):"" }));
-  const s2=[]; X.forEach(r=>(r.p.outputs||[]).forEach(o=>s2.push({ "Position SPM": r.isNew?"Nouvelle":r.id, "Intitulé 2028-2029": r.eff.title, "Grade": r.eff.grade, "Lieu d'affectation": r.eff.station, "Segment": r.p.segment,
-    "Output": o.code, "Outcome": OUT[o.code]?.outcome||"", "Libellé SPM (début)": OUT[o.code]?.text||"", "Priorité": PRIO_L[OUT[o.code]?.prio]||"", "Part (%)": o.pct, "FTE (%)": r.p.fte??r.fte, "ETP sur l'output": Math.round((r.p.fte??r.fte)*o.pct/100)/100 })));
-  const s3=R.map(r=>({ "Position SPM": r.isNew?"Nouvelle":r.id, "Intitulé 2026-2027": r.isNew?"":r.title, "Intitulé proposé": r.eff.title, "Grade": r.eff.grade, "Lieu d'affectation": r.eff.station,
-    "Équipe": TEAMS[r.team]?.label||r.team, "Occupation": r.isNew?"":r.occupied?"Occupé":"Vacant", "Action proposée": r.p?.action?ACTIONS[r.p.action]:"", "Statut": STL[r.st], "Outputs": (r.p?.outputs||[]).map(o=>o.code+" ("+o.pct+"%)").join("; "), "Justification": r.p?.justification||"", "Commentaire WR": r.d?.comment||"" }));
-  const wb=XLSX.utils.book_new();
-  const add=(rows,name,widths)=>{ const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{"Info":"Aucune ligne"}]); ws["!cols"]=widths.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,name); };
-  add(s1,"Positions retenues",[14,44,40,8,16,8,12,26,22,13,34,6,10,13,34,6,10,13,34,6,10,40,50,30,12]);
-  add(s2,"Mapping outputs SPM",[14,44,8,16,22,13,40,60,10,9,8,14]);
-  add(s3,"Toutes les propositions",[14,40,40,8,16,26,10,14,22,40,50,30]);
-  XLSX.writeFile(wb,`AF_COD_PlanRH2028-2029_positions_retenues_${stamp()}.xlsx`);
-  toast("Fichier exporté");
-}
+  const s1=X.map(r=>({"Position SPM":r.isNew?"Nouvelle":r.id,"Intitulé 2028-2029":r.eff.title,"Intitulé 2026-2027":r.isNew?"":r.title,"Grade":r.eff.grade,"Lieu d'affectation":r.eff.station,"FTE (%)":r.p.fte??r.fte,"Action":ACTIONS[r.p.action],"Équipe":TEAMS[r.team]?.label||r.team,"Segment":r.p.segment,...outCols(r),
+    "Outputs (résumé)":(r.p.outputs||[]).map(o=>o.code+" ("+o.pct+"%)").join("; "),"Justification":r.p.justification,"Commentaire WR":r.d?.comment||"","Validée par":r.d?.decidedBy||"","Validée le":r.d?.decidedAt?new Date(r.d.decidedAt).toLocaleDateString("fr-FR"):""}));
+  const s2=[]; X.forEach(r=>(r.p.outputs||[]).forEach(o=>s2.push({"Position SPM":r.isNew?"Nouvelle":r.id,"Intitulé 2028-2029":r.eff.title,"Grade":r.eff.grade,"Lieu d'affectation":r.eff.station,"Segment":r.p.segment,"Output":o.code,"Outcome":OUT[o.code]?.outcome||"","Libellé SPM (début)":OUT[o.code]?.text||"","Priorité":PRIO_L[OUT[o.code]?.prio]||"","Part (%)":o.pct,"FTE (%)":r.p.fte??r.fte,"ETP sur l'output":Math.round((r.p.fte??r.fte)*o.pct/100)/100})));
+  const s3=R.map(r=>({"Position SPM":r.isNew?"Nouvelle":r.id,"Intitulé 2026-2027":r.isNew?"":r.title,"Intitulé proposé":r.eff.title,"Grade":r.eff.grade,"Lieu d'affectation":r.eff.station,"Équipe":TEAMS[r.team]?.label||r.team,"Occupation":r.isNew?"":r.occupied?"Occupé":"Vacant","Action proposée":r.p?.action?ACTIONS[r.p.action]:"","Statut":STL[r.st],"Outputs":(r.p?.outputs||[]).map(o=>o.code+" ("+o.pct+"%)").join("; "),"Justification":r.p?.justification||"","Commentaire WR":r.d?.comment||""}));
+  const wb=XLSX.utils.book_new(); const add=(rs,name,w)=>{ const ws=XLSX.utils.json_to_sheet(rs.length?rs:[{"Info":"Aucune ligne"}]); ws["!cols"]=w.map(x=>({wch:x})); XLSX.utils.book_append_sheet(wb,ws,name); };
+  add(s1,"Positions retenues",[14,44,40,8,16,8,12,26,22,13,34,6,10,13,34,6,10,13,34,6,10,40,50,30,22,12]); add(s2,"Mapping outputs SPM",[14,44,8,16,22,13,40,60,10,9,8,14]); add(s3,"Toutes les propositions",[14,40,40,8,16,26,10,14,22,40,50,30]);
+  XLSX.writeFile(wb,`AF_COD_PlanRH2028-2029_positions_retenues_${stamp()}.xlsx`); toast("Fichier exporté"); }
 
-/* ---------- views ---------- */
-const VIEWS=["apercu","fichiers","propositions","validation","export","mode-emploi"];
-function setView(v){ S.view = VIEWS.includes(v)?v:"apercu"; document.querySelectorAll(".rail a").forEach(a=>{ if(a.dataset.view===S.view) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); }); render(); window.scrollTo(0,0); }
+/* ---------- rendering ---------- */
+const VIEWS=["apercu","propositions","validation","export","acces","compte","mode-emploi"];
+function setView(v){ S.view=VIEWS.includes(v)?v:"apercu"; document.querySelectorAll(".rail a").forEach(a=>{ if(a.dataset.view===S.view) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); }); render(); window.scrollTo(0,0); }
 function render(){
-  const R=rows();
-  const nProp=R.filter(r=>r.p&&r.p.action).length, nWait=R.filter(r=>r.st==="wait"||r.st==="stale").length, nRet=R.filter(isRetained).length;
-  $("#pill-count").innerHTML = `Propositions <b>${R.length?nProp+"/"+R.length:"–"}</b>`;
-  $("#n-prop").textContent = R.length?`${nProp}/${R.length}`:""; $("#n-wait").textContent = nWait||""; $("#n-ret").textContent = nRet||"";
-  const left=DEADLINE-Date.now();
-  $("#pill-deadline").innerHTML = left>0 ? `Retour des Team Leads · <b>${Math.floor(left/864e5)} j ${Math.floor((left%864e5)/36e5)} h</b>` : `Retour des Team Leads · <b>clos</b> le 9 nov., 12 h`;
-  $("#who").innerHTML = S.profile.role ? `${esc(S.profile.name||"Sans nom")} · ${roleLabel(S.profile.role)}${S.profile.role==="tl"&&S.profile.team?" · "+esc(TEAMS[S.profile.team].label):""} <button class="linkbtn" id="btn-profile">changer</button>` : `<button class="linkbtn" id="btn-profile">Choisir mon profil</button>`;
+  const logged=!!S.me; document.body.classList.toggle("anon",!logged);
+  $("#rail-pmo").hidden = role()!=="pmo";
+  const R=logged?rows():[]; const nProp=R.filter(r=>r.p&&r.p.action).length, nWait=R.filter(r=>r.st==="wait"||r.st==="stale").length, nRet=R.filter(isRetained).length;
+  $("#pill-count").innerHTML=`Propositions <b>${R.length?nProp+"/"+R.length:"–"}</b>`;
+  $("#n-prop").textContent=R.length?`${nProp}/${R.length}`:""; $("#n-wait").textContent=nWait||""; $("#n-ret").textContent=nRet||"";
+  const left=DEADLINE-Date.now(); $("#pill-deadline").innerHTML=left>0?`Retour des Team Leads · <b>${Math.floor(left/864e5)} j ${Math.floor((left%864e5)/36e5)} h</b>`:`Retour des Team Leads · <b>clos</b> le 9 nov., 12 h`;
+  $("#who").innerHTML=logged?`${esc(S.me.name)} · ${roleLabel(S.me.role)}${S.me.role==="tl"?" · "+esc(TEAMS[S.me.team]?.label||""):""} <button class="linkbtn" id="btn-out">Se déconnecter</button>`:"";
   const V=$("#view");
-  if(!S.profile.role){ V.innerHTML=vProfile(); }
-  else if(!S.positions.length && !["fichiers","mode-emploi"].includes(S.view)){ V.innerHTML=vStart(); }
-  else V.innerHTML = ({apercu:vApercu, fichiers:vFiles, propositions:vProps, validation:vValid, export:vExport, "mode-emploi":vGuide})[S.view](R);
+  if(!sb){ V.innerHTML=`<section class="sec"><h1 class="h1">La plateforme n'a pas pu se charger</h1><p class="lede">Une bibliothèque n'a pas été téléchargée. Vérifiez votre connexion Internet puis rechargez la page.</p></section>`; return; }
+  if(S.loading){ V.innerHTML=`<section class="sec"><span class="kicker">Plan RH 2028-2029</span><h1 class="h1">Chargement…</h1></section>`; return; }
+  if(!logged){ V.innerHTML=vLogin(); bindView(); return; }
+  if(S.netErr){ V.innerHTML=`<div class="callout amber" role="alert">${esc(S.netErr)} <button class="btn sm" id="btn-retry">Réessayer</button></div>`; bindView(); return; }
+  if(!S.positions.length && !["acces","compte","mode-emploi"].includes(S.view)){ V.innerHTML=vStart(); bindView(); return; }
+  V.innerHTML=({apercu:vApercu,propositions:vProps,validation:vValid,export:vExport,acces:vAccess,compte:vAccount,"mode-emploi":vGuide})[S.view](R);
   bindView();
 }
-function vProfile(){
-  const p=S.profile;
-  return `<section class="sec"><span class="kicker">Bienvenue</span><h1 class="h1">Qui utilise la plateforme sur cet ordinateur ?</h1>
-  <p class="lede">Votre profil sert à signer vos propositions ou vos décisions dans les fichiers exportés. Il reste dans ce navigateur.</p></section>
-  <section class="panel" style="display:flex;flex-direction:column;gap:14px;max-width:620px">
-    <div class="field"><span class="lab">Rôle</span><div class="seg" role="group" aria-label="Rôle">${["tl","wr","pmo"].map(r=>`<button type="button" data-role="${r}" aria-pressed="${p.role===r}">${roleLabel(r)}</button>`).join("")}</div></div>
-    <div class="field"><label for="p-name">Votre nom</label><input id="p-name" value="${esc(p.name)}" autocomplete="name" placeholder="Prénom NOM"></div>
-    <div class="field"><label for="p-team">Votre équipe (Team Leads)</label>${teamSelect("p-team",p.team,"Choisir l'équipe")}</div>
-    <p class="err" id="p-err" role="alert"></p>
-    <div><button class="btn primary" id="p-save">Enregistrer mon profil</button></div>
-  </section>`;
+function vLogin(){
+  return `<section class="hero"><div class="title"><span class="kicker">OMS RDC · Budget programme 2028-2029</span><h1 class="h1">Plan RH 2028-2029</h1>
+    <p class="lede">Plateforme réservée à la WR, au PMO et aux Team Leads du bureau de l'OMS en RDC. Connectez-vous avec l'adresse et le mot de passe communiqués par le PMO.</p></div>
+    <form class="panel" id="login" style="display:flex;flex-direction:column;gap:12px" novalidate>
+      <div class="field"><label for="l-email">Adresse e-mail OMS</label><input id="l-email" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="l-pw">Mot de passe</label><input id="l-pw" type="password" autocomplete="current-password" required></div>
+      ${S.authErr?`<p class="err" role="alert">${esc(S.authErr)}</p>`:""}
+      <div><button class="btn primary" type="submit">Se connecter</button></div>
+      <p class="src">Mot de passe oublié : demandez au PMO de le réinitialiser.</p></form></section>`;
 }
 function vStart(){
-  return `<section class="sec"><span class="kicker">Étape 1</span><h1 class="h1">Chargez le gabarit du plan RH</h1>
-  <p class="lede">La plateforme ne contient aucune donnée : elle lit le fichier XLSX que le PMO vous a envoyé. Rien n'est transmis sur Internet ; tout reste dans votre navigateur.</p></section>
-  ${dropZone()}`;
+  if(role()!=="pmo") return `<section class="sec"><span class="kicker">Plan RH 2028-2029</span><h1 class="h1">Le plan de référence n'est pas encore chargé</h1><p class="lede">Le PMO charge le plan des effectifs 2026-2027. Les positions apparaîtront ici automatiquement.</p></section>`;
+  const pb=S.pendingBaseline;
+  return `<section class="sec"><span class="kicker">PMO · une seule fois</span><h1 class="h1">Charger le plan de référence</h1>
+    <p class="lede">Chargez le gabarit XLSX du plan des effectifs 2026-2027. Une fois confirmé, le plan est verrouillé : il ne pourra plus être rechargé depuis la plateforme.</p></section>
+  ${pb?`<div class="panel" style="display:flex;flex-direction:column;gap:10px"><h2 class="h2">${pb.rows.length} positions lues dans « ${esc(pb.file)} »</h2>
+    <p class="small">${TEAM_ORDER.map(t=>`${esc(TEAMS[t].label)} : ${pb.rows.filter(r=>r.team===t).length}`).join(" · ")}</p>
+    <div class="filters"><button class="btn primary" id="bl-yes" ${S.busy?"disabled":""}>${S.busy?"Chargement…":"Confirmer et verrouiller"}</button><button class="btn" id="bl-no">Annuler</button></div></div>`
+  :`<label class="drop" id="drop" for="file-in"><input type="file" id="file-in" accept=".xlsx" hidden><span class="h3">Glissez le gabarit XLSX ici</span><span class="muted small">ou cliquez pour le choisir</span></label>`}
+  ${S.lastImport?`<div class="callout ${S.lastImport.ok?"":"amber"}" role="status">${esc(S.lastImport.text)}</div>`:""}`;
 }
-function dropZone(){ return `<label class="drop" id="drop" for="file-in"><input type="file" id="file-in" accept=".xlsx" multiple hidden>
-  <span class="h3">Glissez un ou plusieurs fichiers XLSX ici</span><span class="muted small">ou cliquez pour les choisir : gabarit, fichiers de retour des Team Leads ou fichier consolidé</span></label>
-  ${S.lastImport?`<div class="callout ${S.lastImport.ok?"blue":"amber"}" role="status">${S.lastImport.lines.map(l=>`<div>${esc(l)}</div>`).join("")}</div>`:""}`; }
-
 function vApercu(R){
   const c=k=>R.filter(r=>r.st===k).length; const total=R.length, done=c("done"), rej=c("rej"), wait=c("wait")+c("stale"), ns=c("ns"), news=R.filter(r=>r.isNew).length;
-  const left=DEADLINE-Date.now(), days=Math.max(0,Math.floor(left/864e5)), hours=Math.max(0,Math.floor((left%864e5)/36e5));
-  const pct=n=>total?(n/total*100).toFixed(2)+"%":"0";
+  const left=DEADLINE-Date.now(), days=Math.max(0,Math.floor(left/864e5)), hours=Math.max(0,Math.floor((left%864e5)/36e5)); const pct=n=>total?(n/total*100).toFixed(2)+"%":"0";
   const bars=TEAM_ORDER.map(t=>{ const T=R.filter(r=>r.team===t), n=T.length; if(!n) return ""; const k=s=>T.filter(r=>r.st===s).length, w=s=>(k(s)/n*100).toFixed(2)+"%"; const prop=T.filter(r=>r.p&&r.p.action).length;
     return `<div class="brow"><span class="lab">${esc(TEAMS[t].label)}</span><span class="track" role="img" aria-label="${prop} propositions sur ${n}"><span style="width:${w("done")};background:var(--c-done)"></span><span style="width:${w("wait")};background:var(--c-wait)"></span><span style="width:${w("stale")};background:var(--c-stale)"></span><span style="width:${w("rej")};background:var(--c-rej)"></span></span><span class="val"><b>${prop}/${n}</b> proposées</span></div>`; }).join("");
-  const cover={}; R.forEach(r=>{ if(r.p&&r.p.action&&r.p.action!=="supprimer"&&r.st!=="rej") (r.p.outputs||[]).forEach(o=>{ cover[o.code]=1; }); });
+  const cover={}; R.forEach(r=>{ if(r.p&&r.p.action&&r.p.action!=="supprimer"&&r.st!=="rej") (r.p.outputs||[]).forEach(o=>cover[o.code]=1); });
   const highGaps=OUTPUTS.filter(o=>o[2]==="H"&&o[0]<"07"&&!cover[o[0]]);
   const now=Date.now(); let nextSet=false;
   const tl=MILESTONES.map(m=>{ const past=Date.parse(m[0]+"T23:59:00+01:00")<now; let cls=past?"past":""; if(!past&&!nextSet){cls="next";nextSet=true;} if(m[3]) cls+=" key";
     return `<div class="tl-row ${cls}"><span class="d">${esc(m[1])}</span><span class="m"></span><span class="w">${m[3]?"<b>":""}${esc(m[2])}${m[3]?"</b>":""}</span><span class="tag">${esc(m[3])}</span></div>`; }).join("");
-  const scope = S.profile.role==="tl" ? "Ce tableau reflète les fichiers chargés dans ce navigateur." : `Données consolidées à partir de ${S.files.length} fichier${S.files.length>1?"s":""} chargé${S.files.length>1?"s":""} dans ce navigateur.`;
-  return `<section class="hero"><div class="title"><span class="kicker">Budget programme 2028-2029 · costing</span>
-      <h1 class="h1">Quelles positions retenir pour 2028-2029 ?</h1>
-      <p class="lede">Chaque Team Lead indique, pour chaque position de son équipe, s'il faut la maintenir, la reconvertir ou la supprimer, et à quels outputs elle contribue. Le PMO consolide les fichiers ; la WR valide ou rejette chaque proposition le 10 novembre.</p>
-      <div class="filters"><a class="btn primary" href="#propositions">${S.profile.role==="tl"?"Faire mes propositions":"Voir les propositions"}</a><a class="btn" href="#fichiers">Charger ou exporter un fichier</a></div></div>
+  return `<section class="hero"><div class="title"><span class="kicker">Budget programme 2028-2029 · costing</span><h1 class="h1">Quelles positions retenir pour 2028-2029 ?</h1>
+      <p class="lede">Chaque Team Lead indique, pour chaque position de son équipe, s'il faut la maintenir, la reconvertir ou la supprimer, et à quels outputs elle contribue. La WR valide ou rejette chaque proposition le 10 novembre ; les positions retenues partent ensuite dans le costing SPM.</p>
+      <div class="filters"><a class="btn primary" href="#propositions">${role()==="tl"?"Faire mes propositions":"Voir les propositions"}</a>${isEditor()?`<a class="btn" href="#validation">Validation WR</a>`:""}</div></div>
     <div class="count-box"><div><div class="lbl">Retour des propositions</div><div class="big">${left>0?`${days} j ${hours} h`:"Clos"}</div><div class="lbl">avant le lundi 9 novembre, 12 h</div></div>
       <div class="ready-bar" role="img" aria-label="Avancement des ${total} positions"><span style="width:${pct(done)};background:var(--c-done)"></span><span style="width:${pct(c("wait"))};background:var(--c-wait)"></span><span style="width:${pct(c("stale"))};background:var(--c-stale)"></span><span style="width:${pct(rej)};background:var(--c-rej)"></span><span style="width:${pct(ns)};background:rgba(255,255,255,.18)"></span></div>
       <div class="legend"><span><i style="background:var(--c-done)"></i>Validées ${done}</span><span><i style="background:var(--c-wait)"></i>En attente WR ${wait}</span><span><i style="background:var(--c-rej)"></i>Rejetées ${rej}</span><span><i style="background:rgba(255,255,255,.3)"></i>À proposer ${ns}</span></div></div></section>
-  <p class="src">${scope}</p>
-  <section class="grid g5">
-    <div class="tile"><span class="v">${total}</span><span class="l">Positions</span><span class="s">dont ${news} nouvelle${news>1?"s":""}</span></div>
+  <section class="grid g5"><div class="tile"><span class="v">${total}</span><span class="l">Positions</span><span class="s">dont ${news} nouvelle${news>1?"s":""}</span></div>
     <div class="tile ns"><span class="v">${ns}</span><span class="l">À proposer</span><span class="s">sans proposition</span></div>
     <div class="tile wait"><span class="v">${wait}</span><span class="l">En attente WR</span><span class="s">${c("stale")} modifiée${c("stale")>1?"s":""} après décision</span></div>
     <div class="tile done"><span class="v">${done}</span><span class="l">Validées</span><span class="s">${R.filter(isRetained).length} retenues pour 2028-2029</span></div>
     <div class="tile rej"><span class="v">${rej}</span><span class="l">Rejetées</span><span class="s">à revoir avec l'équipe</span></div></section>
-  <section class="sec"><div class="sec-head"><h2 class="h2">Avancement par équipe</h2><span class="src">Rattachement initial proposé par le PMO, modifiable dans chaque fiche</span></div>
+  <section class="sec"><div class="sec-head"><h2 class="h2">Avancement par équipe</h2><span class="src">Mis à jour en temps réel</span></div>
     <div class="panel"><div class="bars">${bars}</div><div class="legend" style="margin-top:12px"><span><i style="background:var(--c-done)"></i>Validées</span><span><i style="background:var(--c-wait)"></i>En attente WR</span><span><i style="background:var(--c-stale)"></i>Modifiées après décision</span><span><i style="background:var(--c-rej)"></i>Rejetées</span><span><i style="background:var(--surface-2);border:1px solid var(--line)"></i>À proposer</span></div></div></section>
-  <section class="grid g2">
-    <div class="sec"><div class="sec-head"><h2 class="h2">Calendrier adopté par l'EXM</h2></div><div class="panel"><div class="tl">${tl}</div></div></div>
+  <section class="grid g2"><div class="sec"><div class="sec-head"><h2 class="h2">Calendrier adopté par l'EXM</h2></div><div class="panel"><div class="tl">${tl}</div></div></div>
     <div class="sec"><div class="sec-head"><h2 class="h2">Outputs prioritaires sans position</h2><span class="src">${highGaps.length} sur ${OUTPUTS.filter(o=>o[2]==="H"&&o[0]<"07").length}</span></div>
       <div class="panel" style="display:flex;flex-direction:column;gap:8px"><p class="small muted">Outputs techniques en priorité haute auxquels aucune position proposée n'est encore rattachée.</p>
-      ${highGaps.length?highGaps.map(o=>`<div><span class="code">${o[0]}</span> <span class="small">${esc(OUT[o[0]].outcome)}</span></div>`).join(""):`<p class="small">Tous les outputs techniques en priorité haute ont au moins une position.</p>`}</div></div></section>`;
+      ${highGaps.length?highGaps.map(o=>`<div><span class="code">${o[0]}</span> <span class="small">${esc(OUT[o[0]].outcome)}</span></div>`).join(""):`<p class="small">Tous les outputs techniques en priorité haute ont au moins une position.</p>`}</div></div></section>
+  ${S.baseline?`<p class="src">Plan de référence : ${S.baseline.count} positions chargées par ${esc(S.baseline.by||"le PMO")} le ${fmtDate(S.baseline.at)}, verrouillé.</p>`:""}`;
 }
-
-function vFiles(R){
-  const role=S.profile.role, team=S.profile.team, mine=team?R.filter(r=>r.team===team):[];
-  const minePending=mine.filter(r=>!r.p||!r.p.action).length;
-  return `<section class="sec"><span class="kicker">Fichiers</span><h1 class="h1">Charger et exporter les fichiers</h1>
-  <p class="lede">Tous les fichiers ont le même format que le gabarit. Les données restent dans ce navigateur et dans vos fichiers ; la plateforme n'envoie rien sur Internet.</p></section>
-  <section class="sec"><div class="sec-head"><h2 class="h2">Charger</h2><span class="src">Les propositions et décisions les plus récentes l'emportent</span></div>${dropZone()}</section>
-  ${R.length?`<section class="sec"><div class="sec-head"><h2 class="h2">Exporter</h2></div><div class="grid g2">
-    ${role==="tl"?`<div class="panel" style="display:flex;flex-direction:column;gap:8px"><h3 class="h3">Mon fichier de retour</h3><p class="small">${team?`Les ${mine.length} positions de l'équipe ${esc(TEAMS[team].label)}${minePending?`, dont ${minePending} encore sans proposition`:""}. Envoyez ce fichier au PMO avant le lundi 9 novembre, 12 h.`:"Choisissez d'abord votre équipe dans votre profil."}</p><div><button class="btn primary" id="x-team" ${team?"":"disabled"}>Exporter mon fichier de retour</button></div></div>`:""}
-    <div class="panel" style="display:flex;flex-direction:column;gap:8px"><h3 class="h3">Fichier consolidé</h3><p class="small">Toutes les positions, propositions et décisions chargées dans ce navigateur. C'est aussi le fichier à transmettre à la WR, ou à recharger plus tard.</p><div><button class="btn ${role==="tl"?"":"primary"}" id="x-all">Exporter le fichier consolidé</button></div></div>
-    ${role!=="tl"?`<div class="panel" style="display:flex;flex-direction:column;gap:8px"><h3 class="h3">Positions retenues</h3><p class="small">Positions validées par la WR, avec le lieu d'affectation, le grade et les outputs, en trois onglets prêts pour SPM.</p><div><a class="btn" href="#export">Ouvrir l'export final</a></div></div>`:""}
-  </div></section>`:""}
-  <section class="sec"><div class="sec-head"><h2 class="h2">Données de ce navigateur</h2></div>
-    <div class="panel" style="display:flex;flex-direction:column;gap:8px">
-      <p class="small">${S.files.length?`Fichiers chargés : ${S.files.slice(-6).map(f=>esc(f.name)).join(", ")}${S.files.length>6?"…":""}.`:"Aucun fichier chargé."} ${storageOk?"Vos saisies sont enregistrées automatiquement dans ce navigateur.":"<b>Ce navigateur n'enregistre pas les données : exportez votre fichier avant de fermer la page.</b>"}</p>
-      <div>${S.confirmReset?`<span class="confirm">Effacer toutes les données de ce navigateur ? Exportez d'abord votre fichier. <button class="btn sm no on" id="reset-yes">Oui, effacer</button><button class="btn sm" id="reset-no">Non</button></span>`:`<button class="btn no" id="reset">Effacer les données de ce navigateur</button>`}</div>
-    </div></section>`;
-}
-
-function filterRows(R,f){
-  const q=f.q.trim().toLowerCase();
+function filterRows(R,f){ const q=f.q.trim().toLowerCase();
   return R.filter(r=>(!f.team||r.team===f.team)&&(!f.status||r.st===f.status||(f.status==="wait"&&r.st==="stale"))&&(!q||(r.id+" "+r.title+" "+r.eff.title+" "+r.station+" "+r.grade).toLowerCase().includes(q)))
-   .sort((a,b)=>TEAM_ORDER.indexOf(a.team)-TEAM_ORDER.indexOf(b.team)||(a.isNew-b.isNew)||a.title.localeCompare(b.title));
-}
-function teamSelect(id,val,all="Toutes les équipes"){ return `<select id="${id}" aria-label="Équipe"><option value="">${all}</option>${TEAM_ORDER.map(t=>`<option value="${t}" ${val===t?"selected":""}>${esc(TEAMS[t].label)}</option>`).join("")}</select>`; }
+   .sort((a,b)=>TEAM_ORDER.indexOf(a.team)-TEAM_ORDER.indexOf(b.team)||(a.isNew-b.isNew)||a.title.localeCompare(b.title)); }
+function teamSelect(id,val,all="Toutes les équipes",dis=""){ return `<select id="${id}" aria-label="Équipe" ${dis}><option value="">${all}</option>${TEAM_ORDER.map(t=>`<option value="${t}" ${val===t?"selected":""}>${esc(TEAMS[t].label)}</option>`).join("")}</select>`; }
 function vProps(R){
   const list=filterRows(R,S.f);
-  const body=list.map(r=>`<tr class="clickable" data-open="${esc(r.id)}" tabindex="0">
-    <td><span class="code">${r.isNew?"Nouvelle":esc(r.id)}</span></td>
+  const body=list.map(r=>`<tr class="clickable" data-open="${esc(r.id)}" tabindex="0"><td><span class="code">${r.isNew?"Nouvelle":esc(r.id)}</span></td>
     <td><div class="t">${esc(r.eff.title)}</div>${r.eff.title!==r.title?`<div class="sub">Actuel : ${esc(r.title)}</div>`:""}<div class="sub">${esc(TEAMS[r.team]?.label||r.team)}</div></td>
-    <td class="mono">${esc(r.eff.grade)}</td><td>${esc(r.eff.station)}</td>
-    <td>${r.isNew?`<span class="occ">–</span>`:r.occupied?`<span class="occ">Occupé</span>`:`<span class="occ vac">Vacant</span>`}</td>
-    <td>${actTag(r.p?.action)}</td>
-    <td><div class="codes">${(r.p?.outputs||[]).map(o=>`<span class="code" title="${esc(OUT[o.code]?.outcome||"")}">${esc(o.code)} · ${o.pct}%</span>`).join("")||`<span class="muted small">–</span>`}</div></td>
-    <td>${stChip(r.st)}</td></tr>`).join("");
+    <td class="mono">${esc(r.eff.grade)}</td><td>${esc(r.eff.station)}</td><td>${r.isNew?`<span class="occ">–</span>`:r.occupied?`<span class="occ">Occupé</span>`:`<span class="occ vac">Vacant</span>`}</td>
+    <td>${actTag(r.p?.action)}</td><td><div class="codes">${(r.p?.outputs||[]).map(o=>`<span class="code" title="${esc(OUT[o.code]?.outcome||"")}">${esc(o.code)} · ${o.pct}%</span>`).join("")||`<span class="muted small">–</span>`}</div></td><td>${stChip(r.st)}</td></tr>`).join("");
   return `<section class="sec"><span class="kicker">01 · Team Leads</span><h1 class="h1">Propositions de positions pour 2028-2029</h1>
-    <p class="lede">Ouvrez chaque position de votre équipe et indiquez votre proposition. Quand vous avez terminé, exportez votre fichier de retour depuis la vue Fichiers et envoyez-le au PMO.</p></section>
+    <p class="lede">${role()==="tl"?`Ouvrez chaque position de l'équipe ${esc(TEAMS[S.me.team]?.label||"")} et indiquez votre proposition. Chaque enregistrement est visible immédiatement par la WR et le PMO.`:"Toutes les propositions des équipes, mises à jour en temps réel."}</p></section>
   <section class="sec"><div class="filters">${teamSelect("f-team",S.f.team)}
       <select id="f-status" aria-label="Statut"><option value="">Tous les statuts</option>${Object.entries(STL).map(([k,v])=>`<option value="${k}" ${S.f.status===k?"selected":""}>${v}</option>`).join("")}</select>
       <input id="f-q" type="search" placeholder="Rechercher un intitulé, un code, un lieu" value="${esc(S.f.q)}" aria-label="Rechercher">
-      <button class="btn primary" id="btn-new">+ Proposer une nouvelle position</button></div>
+      ${role()!=="wr"?`<button class="btn primary" id="btn-new">+ Proposer une nouvelle position</button>`:""}</div>
     <p class="src">${list.length} position${list.length>1?"s":""} affichée${list.length>1?"s":""}</p>
     <div class="tbl-wrap"><table><thead><tr><th>Position</th><th>Intitulé 2028-2029</th><th>Grade</th><th>Lieu</th><th>Occupation</th><th>Proposition</th><th>Outputs</th><th>Statut</th></tr></thead>
     <tbody>${body||`<tr><td colspan="8"><div class="empty">Aucune position ne correspond à ces filtres.</div></td></tr>`}</tbody></table></div></section>`;
 }
 function vValid(R){
-  if(!isEditorRole()) return `<section class="sec"><span class="kicker">02 · WR</span><h1 class="h1">Validation par la WR</h1><p class="lede">Cette vue sert à la WR et au PMO. Choisissez le profil WR ou PMO pour l'utiliser.</p></section>`;
+  if(!isEditor()) return `<section class="sec"><span class="kicker">02 · WR</span><h1 class="h1">Validation par la WR</h1><p class="lede">Cette vue est réservée à la WR et au PMO. Le statut de vos propositions s'affiche dans la vue Propositions.</p></section>`;
   const f=S.vf; const list=filterRows(R,{team:f.team,status:"",q:""}).filter(r=>r.p&&r.p.action).filter(r=>!f.status||(f.status==="wait"?(r.st==="wait"||r.st==="stale"):r.st===f.status));
   const body=list.map(r=>`<tr><td><span class="code">${r.isNew?"Nouvelle":esc(r.id)}</span><div class="sub" style="margin-top:4px">${esc(TEAMS[r.team]?.label||"")}</div></td>
     <td><div class="t"><button class="linkbtn strong" data-open="${esc(r.id)}">${esc(r.eff.title)}</button></div><div class="sub">${esc(r.eff.grade)} · ${esc(r.eff.station)}${r.p.segment?" · "+esc(r.p.segment):""}</div>
       ${r.p.justification?`<div class="sub">« ${esc(r.p.justification)} »</div>`:""}<div class="sub">Proposé par ${esc(r.p.updatedBy||"un Team Lead")}, ${fmtDate(r.p.updatedAt)}</div></td>
-    <td>${actTag(r.p.action)}</td>
-    <td><div class="codes">${(r.p.outputs||[]).map(o=>`<span class="code">${esc(o.code)} · ${o.pct}%</span> <span class="prio ${OUT[o.code]?.prio||""}">${PRIO_L[OUT[o.code]?.prio]||""}</span>`).join("<br>")||"–"}</div></td>
+    <td>${actTag(r.p.action)}</td><td><div class="codes">${(r.p.outputs||[]).map(o=>`<span class="code">${esc(o.code)} · ${o.pct}%</span> <span class="prio ${OUT[o.code]?.prio||""}">${PRIO_L[OUT[o.code]?.prio]||""}</span>`).join("<br>")||"–"}</div></td>
     <td>${stChip(r.st)}${r.d&&r.d.comment?`<div class="sub" style="margin-top:4px">« ${esc(r.d.comment)} »</div>`:""}</td>
-    <td><div class="vrow-actions"><input id="c-${esc(r.id)}" placeholder="Commentaire (facultatif)" value="${esc(r.d?.comment||"")}" aria-label="Commentaire">
-      <button class="btn sm ok ${r.st==="done"?"on":""}" data-dec="valide" data-id="${esc(r.id)}">Valider</button><button class="btn sm no ${r.st==="rej"?"on":""}" data-dec="rejete" data-id="${esc(r.id)}">Rejeter</button></div></td></tr>`).join("");
-  const pending=R.filter(r=>r.st==="wait"||r.st==="stale").length;
-  return `<section class="sec"><span class="kicker">02 · WR</span><h1 class="h1">Validation des hypothèses de postes</h1>
-    <p class="lede">${pending} proposition${pending>1?"s":""} en attente de décision. Une proposition modifiée après la décision revient en attente.</p></section>
-  <section class="sec"><div class="filters">${teamSelect("v-team",f.team)}
-    <select id="v-status" aria-label="Statut"><option value="wait" ${f.status==="wait"?"selected":""}>En attente</option><option value="done" ${f.status==="done"?"selected":""}>Validées</option><option value="rej" ${f.status==="rej"?"selected":""}>Rejetées</option><option value="" ${f.status===""?"selected":""}>Toutes</option></select>
+    <td><div class="vrow-actions"><input id="c-${esc(r.id)}" placeholder="Commentaire (facultatif)" value="${esc(r.d?.comment||"")}" aria-label="Commentaire"><button class="btn sm ok ${r.st==="done"?"on":""}" data-dec="valide" data-id="${esc(r.id)}">Valider</button><button class="btn sm no ${r.st==="rej"?"on":""}" data-dec="rejete" data-id="${esc(r.id)}">Rejeter</button></div></td></tr>`).join("");
+  const pend=R.filter(r=>r.st==="wait"||r.st==="stale").length;
+  return `<section class="sec"><span class="kicker">02 · WR</span><h1 class="h1">Validation des hypothèses de postes</h1><p class="lede">${pend} proposition${pend>1?"s":""} en attente de décision. Une proposition modifiée après la décision revient en attente.</p></section>
+  <section class="sec"><div class="filters">${teamSelect("v-team",f.team)}<select id="v-status" aria-label="Statut"><option value="wait" ${f.status==="wait"?"selected":""}>En attente</option><option value="done" ${f.status==="done"?"selected":""}>Validées</option><option value="rej" ${f.status==="rej"?"selected":""}>Rejetées</option><option value="" ${f.status===""?"selected":""}>Toutes</option></select>
     ${f.status==="wait"&&list.length?`<button class="btn ok" id="btn-bulk">${list.length>1?`Valider les ${list.length} propositions affichées`:"Valider la proposition affichée"}</button>`:""}</div><div id="bulk-confirm"></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Position</th><th>Proposition</th><th>Action</th><th>Outputs</th><th>Statut</th><th>Décision</th></tr></thead>
-    <tbody>${body||`<tr><td colspan="6"><div class="empty">Aucune proposition dans cette sélection.</div></td></tr>`}</tbody></table></div>
-    <p class="src">Les décisions sont enregistrées dans ce navigateur. Exportez le fichier consolidé pour les conserver ou les transmettre.</p></section>`;
+    <div class="tbl-wrap"><table><thead><tr><th>Position</th><th>Proposition</th><th>Action</th><th>Outputs</th><th>Statut</th><th>Décision</th></tr></thead><tbody>${body||`<tr><td colspan="6"><div class="empty">Aucune proposition dans cette sélection.</div></td></tr>`}</tbody></table></div></section>`;
 }
 function vExport(R){
-  const X=exportRows(R); const byStation={}; X.forEach(r=>byStation[r.eff.station]=(byStation[r.eff.station]||0)+1);
-  const byGrade={}; X.forEach(r=>{const g=(r.eff.grade||"")[0]; const k=g==="N"?"NO":g==="G"?"G":g==="D"?"D":"P"; byGrade[k]=(byGrade[k]||0)+1;});
-  const body=X.map(r=>`<tr><td><span class="code">${r.isNew?"Nouvelle":esc(r.id)}</span></td><td><div class="t">${esc(r.eff.title)}</div><div class="sub">${esc(TEAMS[r.team]?.label||"")}</div></td>
-    <td class="mono">${esc(r.eff.grade)}</td><td>${esc(r.eff.station)}</td><td class="r mono">${r.p.fte??r.fte}%</td><td>${esc(r.p.segment||"")}</td>
-    <td><div class="codes">${(r.p.outputs||[]).map(o=>`<span class="code">${esc(o.code)} · ${o.pct}%</span>`).join("")}</div></td><td>${actTag(r.p.action)}</td></tr>`).join("");
-  return `<section class="sec"><span class="kicker">03 · PMO</span><h1 class="h1">Positions retenues pour 2028-2029</h1>
-    <p class="lede">Seules les propositions validées par la WR, hors suppressions, figurent ici. Le fichier XLSX contient trois onglets : les positions retenues, le mapping position-output pour SPM, et toutes les propositions avec leur statut.</p></section>
-  <section class="grid g5">
-    <div class="tile done"><span class="v">${X.length}</span><span class="l">Positions retenues</span><span class="s">sur ${R.length} au total</span></div>
-    <div class="tile"><span class="v">${(byGrade.P||0)+(byGrade.D||0)}</span><span class="l">Internationaux</span><span class="s">grades P et D</span></div>
-    <div class="tile"><span class="v">${byGrade.NO||0}</span><span class="l">Nationaux (NO)</span><span class="s">administrateurs nationaux</span></div>
-    <div class="tile"><span class="v">${byGrade.G||0}</span><span class="l">Services généraux</span><span class="s">grades G</span></div>
-    <div class="tile"><span class="v">${Object.keys(byStation).length}</span><span class="l">Lieux d'affectation</span><span class="s">${esc(Object.entries(byStation).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>e[0]+" "+e[1]).join(" · "))}</span></div></section>
-  <section class="sec"><div class="filters"><button class="btn primary" id="btn-xlsx" ${X.length?"":"disabled"}>Télécharger les positions retenues (XLSX)</button></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Position</th><th>Intitulé</th><th>Grade</th><th>Lieu d'affectation</th><th class="r">FTE</th><th>Segment</th><th>Outputs</th><th>Action</th></tr></thead>
-    <tbody>${body||`<tr><td colspan="8"><div class="empty">Aucune position n'est encore validée par la WR.</div></td></tr>`}</tbody></table></div></section>`;
+  const X=exportRows(R); const bySt={}; X.forEach(r=>bySt[r.eff.station]=(bySt[r.eff.station]||0)+1); const byG={}; X.forEach(r=>{const g=(r.eff.grade||"")[0]; const k=g==="N"?"NO":g==="G"?"G":g==="D"?"D":"P"; byG[k]=(byG[k]||0)+1;});
+  const body=X.map(r=>`<tr><td><span class="code">${r.isNew?"Nouvelle":esc(r.id)}</span></td><td><div class="t">${esc(r.eff.title)}</div><div class="sub">${esc(TEAMS[r.team]?.label||"")}</div></td><td class="mono">${esc(r.eff.grade)}</td><td>${esc(r.eff.station)}</td><td class="r mono">${r.p.fte??r.fte}%</td><td>${esc(r.p.segment||"")}</td><td><div class="codes">${(r.p.outputs||[]).map(o=>`<span class="code">${esc(o.code)} · ${o.pct}%</span>`).join("")}</div></td><td>${actTag(r.p.action)}</td></tr>`).join("");
+  return `<section class="sec"><span class="kicker">03 · PMO</span><h1 class="h1">Positions retenues pour 2028-2029</h1><p class="lede">Seules les propositions validées par la WR, hors suppressions, figurent ici. Le fichier contient trois onglets : positions retenues, mapping position-output pour SPM, et toutes les propositions avec leur statut.</p></section>
+  <section class="grid g5"><div class="tile done"><span class="v">${X.length}</span><span class="l">Positions retenues</span><span class="s">sur ${R.length} au total</span></div><div class="tile"><span class="v">${(byG.P||0)+(byG.D||0)}</span><span class="l">Internationaux</span><span class="s">grades P et D</span></div><div class="tile"><span class="v">${byG.NO||0}</span><span class="l">Nationaux (NO)</span><span class="s">administrateurs nationaux</span></div><div class="tile"><span class="v">${byG.G||0}</span><span class="l">Services généraux</span><span class="s">grades G</span></div><div class="tile"><span class="v">${Object.keys(bySt).length}</span><span class="l">Lieux d'affectation</span><span class="s">${esc(Object.entries(bySt).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>e[0]+" "+e[1]).join(" · "))}</span></div></section>
+  <section class="sec"><div class="filters"><button class="btn primary" id="btn-xlsx" ${X.length?"":"disabled"}>Télécharger les positions retenues (XLSX)</button><button class="btn" id="btn-all">Exporter toutes les données (XLSX)</button></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Position</th><th>Intitulé</th><th>Grade</th><th>Lieu d'affectation</th><th class="r">FTE</th><th>Segment</th><th>Outputs</th><th>Action</th></tr></thead><tbody>${body||`<tr><td colspan="8"><div class="empty">Aucune position n'est encore validée par la WR.</div></td></tr>`}</tbody></table></div></section>`;
+}
+function vAccess(){
+  if(role()!=="pmo") return `<section class="sec"><h1 class="h1">Accès</h1><p class="lede">Réservé au PMO.</p></section>`;
+  const body=S.members.map(m=>`<tr><td><div class="t">${esc(m.name)}</div><div class="sub">${esc(m.email)}</div></td><td>${roleLabel(m.role)}</td><td>${m.team?esc(TEAMS[m.team]?.label||m.team):"–"}</td>
+    <td>${m.active?`<span class="chip st-done">Actif</span>`:`<span class="chip st-ns">Désactivé</span>`}</td>
+    <td><div class="vrow-actions">${m.user_id===S.me.user_id?`<span class="src">Vous</span>`:`<button class="btn sm" data-reset="${m.user_id}">Nouveau mot de passe</button><button class="btn sm ${m.active?"no":"ok"}" data-toggle="${m.user_id}">${m.active?"Désactiver":"Réactiver"}</button>`}</div></td></tr>`).join("");
+  return `<section class="sec"><span class="kicker">PMO</span><h1 class="h1">Accès à la plateforme</h1><p class="lede">Créez un compte pour la WR et chaque Team Lead. Communiquez le mot de passe temporaire par la messagerie OMS ; chacun le change dans « Mon compte ».</p></section>
+  ${S.newPw?`<div class="callout" role="status"><b>Mot de passe de ${esc(S.newPw.who)}</b> : <span class="code" style="font-size:14px">${esc(S.newPw.pw)}</span> <button class="btn sm" id="copy-pw">Copier</button><br><span class="small">Il ne sera plus affiché. Transmettez-le avec le lien de la plateforme.</span></div>`:""}
+  <section class="panel" style="display:flex;flex-direction:column;gap:12px"><h2 class="h2">Ajouter une personne</h2>
+    <div class="row2"><div class="field"><label for="m-email">Adresse e-mail</label><input id="m-email" type="email" placeholder="nom@who.int"></div><div class="field"><label for="m-name">Nom</label><input id="m-name" placeholder="Prénom NOM"></div>
+      <div class="field"><label for="m-role">Rôle</label><select id="m-role"><option value="tl">Team Lead</option><option value="wr">WR</option><option value="pmo">PMO</option></select></div></div>
+    <div class="field" style="max-width:320px"><label for="m-team">Équipe (Team Leads)</label>${teamSelect("m-team","","Choisir l'équipe")}</div>
+    <p class="err" id="m-err" role="alert"></p><div><button class="btn primary" id="m-add" ${S.busy?"disabled":""}>Créer le compte</button></div></section>
+  <section class="sec"><div class="sec-head"><h2 class="h2">Comptes</h2><span class="src">${S.members.length} personne${S.members.length>1?"s":""}</span></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Personne</th><th>Rôle</th><th>Équipe</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${body}</tbody></table></div></section>`;
+}
+function vAccount(){
+  return `<section class="sec"><span class="kicker">Mon compte</span><h1 class="h1">${esc(S.me.name)}</h1><p class="lede">${esc(S.me.email)} · ${roleLabel(S.me.role)}${S.me.team?" · "+esc(TEAMS[S.me.team]?.label||""):""}</p></section>
+  <form class="panel" id="pw-form" style="display:flex;flex-direction:column;gap:12px;max-width:520px" novalidate><h2 class="h2">Changer mon mot de passe</h2>
+    <div class="field"><label for="pw1">Nouveau mot de passe (10 caractères minimum)</label><input id="pw1" type="password" autocomplete="new-password"></div>
+    <div class="field"><label for="pw2">Confirmer</label><input id="pw2" type="password" autocomplete="new-password"></div>
+    <p class="err" id="pw-err" role="alert"></p><div><button class="btn primary" type="submit">Enregistrer</button></div></form>`;
 }
 function vGuide(){
-  return `<section class="sec"><span class="kicker">Mode d'emploi</span><h1 class="h1">Comment utiliser la plateforme</h1>
-  <p class="lede">La plateforme fonctionne sans serveur : elle lit et écrit des fichiers XLSX. Le plan des effectifs ne figure pas sur ce site ; il circule uniquement par la messagerie interne de l'OMS.</p></section>
-  <section class="steps">
-    <div class="panel"><span class="kicker">Team Leads · d'ici au 9 nov., 12 h</span><h3 class="h3">Proposer</h3><ol>
-      <li>Choisissez le profil Team Lead et votre équipe.</li><li>Dans « Fichiers », chargez le gabarit reçu du PMO.</li>
-      <li>Dans « Propositions », ouvrez chaque position : Maintenir, Reconvertir ou Supprimer, outputs (100 %), segment, justification.</li>
-      <li>Ajoutez les nouvelles positions si besoin.</li><li>Dans « Fichiers », exportez votre fichier de retour et envoyez-le au PMO.</li></ol></div>
-    <div class="panel"><span class="kicker">PMO · 9 nov.</span><h3 class="h3">Consolider</h3><ol>
-      <li>Chargez le gabarit puis tous les fichiers de retour, en une fois si vous voulez.</li><li>Contrôlez l'aperçu : positions sans proposition, outputs prioritaires non couverts.</li>
-      <li>Exportez le fichier consolidé pour la séance du 10 novembre.</li></ol></div>
-    <div class="panel"><span class="kicker">WR · 10 nov.</span><h3 class="h3">Valider, puis exporter</h3><ol>
-      <li>En séance, sur l'écran du PMO, ou en chargeant le fichier consolidé.</li><li>« Validation WR » : Valider ou Rejeter chaque proposition.</li>
-      <li>« Export XLSX » : télécharger les positions retenues pour la saisie dans SPM.</li></ol></div>
-  </section>
-  <section class="sec"><div class="sec-head"><h2 class="h2">Règles de la note d'orientation PB 2028-2029</h2></div>
-  <div class="tbl-wrap"><table><tbody>
+  return `<section class="sec"><span class="kicker">Mode d'emploi</span><h1 class="h1">Comment utiliser la plateforme</h1><p class="lede">Les saisies sont enregistrées dans une base sécurisée, visibles en temps réel par la WR, le PMO et les Team Leads. Chaque modification est horodatée et tracée.</p></section>
+  <section class="steps"><div class="panel"><span class="kicker">Team Leads · d'ici au 9 nov., 12 h</span><h3 class="h3">Proposer</h3><ol><li>Connectez-vous, puis changez votre mot de passe dans « Mon compte ».</li><li>Dans « Propositions », ouvrez chaque position de votre équipe : Maintenir, Reconvertir ou Supprimer.</li><li>Rattachez-la à 1 à 3 outputs (total 100 %), indiquez le segment et justifiez toute reconversion, suppression ou création.</li><li>Ajoutez les nouvelles positions avec « Proposer une nouvelle position ».</li></ol></div>
+    <div class="panel"><span class="kicker">WR · 10 nov.</span><h3 class="h3">Valider ou rejeter</h3><ol><li>Ouvrez « Validation WR » : les propositions en attente s'affichent.</li><li>Validez ou rejetez chaque ligne, avec un commentaire si besoin.</li><li>Une proposition modifiée après décision revient en attente.</li></ol></div>
+    <div class="panel"><span class="kicker">PMO</span><h3 class="h3">Préparer et exporter</h3><ol><li>Chargez une seule fois le plan de référence ; il est alors verrouillé.</li><li>Créez les comptes dans « Accès ».</li><li>Après validation, téléchargez les positions retenues pour SPM.</li></ol></div></section>
+  <section class="sec"><div class="sec-head"><h2 class="h2">Règles de la note d'orientation PB 2028-2029</h2></div><div class="tbl-wrap"><table><tbody>
     <tr><td class="mono" style="width:44px">1</td><td><b>Au niveau output.</b> Chaque position se rattache à des outputs et à un segment, dans l'enveloppe.</td></tr>
     <tr><td class="mono">2</td><td><b>Effectifs alignés sur le CCOM.</b> Partir des postes actuels ; la plateforme n'approuve aucun poste.</td></tr>
     <tr><td class="mono">3</td><td><b>Priorité haute.</b> Tendance budgétaire stable ou en hausse, sauf justification.</td></tr>
     <tr><td class="mono">4</td><td><b>Non prioritaire.</b> Pas de hausse sans mandat, coût fixe ou contrainte de financement.</td></tr>
-    <tr><td class="mono">5</td><td><b>Stratégique.</b> Pas de plan d'activités détaillé ni de décision individuelle de recrutement.</td></tr>
-  </tbody></table></div>
-  <p class="src">Le profil choisi signe les propositions et les décisions dans les fichiers ; il ne protège pas l'accès. Seuls les fichiers reçus par messagerie interne font foi.</p></section>`;
+    <tr><td class="mono">5</td><td><b>Stratégique.</b> Pas de plan d'activités détaillé ni de décision individuelle de recrutement.</td></tr></tbody></table></div></section>`;
 }
 
 /* ---------- drawer ---------- */
-function openDrawer(id){
-  const R=rows(); let r=R.find(x=>x.id===id);
-  if(!r && id==="__new__") r=newRow();
-  if(!r) return; S.openId=id; const p=r.p||{};
-  S.draft={ action:p.action||(r.isNew?"creer":""), team:p.team||r.team||(S.profile.role==="tl"?S.profile.team:"")||"", title:p.title||(r.isNew?"":r.title), grade:p.grade||r.grade||"", station:p.station||r.station||"",
-    fte:p.fte??r.fte??100, segment:p.segment||"", justification:p.justification||"", outputs:(p.outputs&&p.outputs.length?p.outputs.map(o=>({...o})):[{code:"",pct:100}]), confirmDel:false, err:"" };
-  renderDrawer(r);
-}
-const newRow=()=>({id:"__new__",isNew:true,title:"",grade:"",station:"Kinshasa",fte:100,team:"",occupied:false,contract:"Nouvelle",unit:"Nouvelle position",p:null,d:null,st:"ns",eff:{}});
-function closeDrawer(){ S.openId=null; S.draft=null; $("#layer").innerHTML=""; }
-function outputOptions(sel){ let html=`<option value="">Choisir un output</option>`, last="";
-  OUTPUTS.forEach(o=>{ const oc=o[0].slice(0,6); if(oc!==last){ if(last) html+="</optgroup>"; html+=`<optgroup label="${esc(OUTCOMES[oc])}">`; last=oc; } html+=`<option value="${o[0]}" ${sel===o[0]?"selected":""}>${o[0]} [${PRIO_L[o[2]]}] ${esc(o[1])}</option>`; });
-  return html+"</optgroup>"; }
+const newRow=()=>({id:"__new__",isNew:true,title:"",grade:"",station:"Kinshasa",fte:100,team:role()==="tl"?S.me.team:"",occupied:false,contract:"Nouvelle",unit:"Nouvelle position",p:null,d:null,st:"ns",eff:{}});
+const currentRow=()=>rows().find(x=>x.id===S.openId)||(S.openId==="__new__"?newRow():null);
+function openDrawer(id){ const r=id==="__new__"?newRow():rows().find(x=>x.id===id); if(!r) return; S.openId=id; const p=r.p||{};
+  S.draft={action:p.action||(r.isNew?"creer":""), team:p.team||r.team||"", title:p.title||(r.isNew?"":r.title), grade:p.grade||r.grade||"", station:p.station||r.station||"", fte:p.fte??r.fte??100, segment:p.segment||"", justification:p.justification||"", outputs:(p.outputs&&p.outputs.length?p.outputs.map(o=>({...o})):[{code:"",pct:100}]), confirmDel:false, err:"", saving:false};
+  renderDrawer(r); }
+function closeDrawer(){ S.openId=null; S.draft=null; $("#layer").innerHTML=""; render(); }
+function outputOptions(sel){ let h=`<option value="">Choisir un output</option>`, last=""; OUTPUTS.forEach(o=>{ const oc=o[0].slice(0,6); if(oc!==last){ if(last) h+="</optgroup>"; h+=`<optgroup label="${esc(OUTCOMES[oc])}">`; last=oc; } h+=`<option value="${o[0]}" ${sel===o[0]?"selected":""}>${o[0]} [${PRIO_L[o[2]]}] ${esc(o[1])}</option>`; }); return h+"</optgroup>"; }
 function renderDrawer(r){
-  const D=S.draft, a=D.action, needsDetail=(a==="reconvertir"||a==="creer"), needsOut=a&&a!=="supprimer"; const sum=D.outputs.reduce((s,o)=>s+(Number(o.pct)||0),0);
+  const D=S.draft, a=D.action, ro=!canEditRow(r)&&!(r.id==="__new__"&&role()!=="wr"), dis=ro?"disabled":"", needsDetail=(a==="reconvertir"||a==="creer"), needsOut=a&&a!=="supprimer"; const sum=D.outputs.reduce((s,o)=>s+(Number(o.pct)||0),0);
   const acts=r.isNew?["creer"]:["maintenir","reconvertir","supprimer"];
-  $("#layer").innerHTML=`<div class="scrim" data-close></div>
-  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title">
+  $("#layer").innerHTML=`<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title">
     <div class="dh"><div style="min-width:0"><span class="kicker">${r.isNew?"Nouvelle position":esc(r.id)} · ${esc(r.unit||"")}</span><h2 class="h2" id="dr-title">${r.isNew&&!r.p?"Proposer une nouvelle position":esc(r.title)}</h2></div><button class="xbtn" data-close aria-label="Fermer">×</button></div>
     <div class="db">
       ${r.isNew&&!r.p?"":`<div class="facts"><div><span class="l">Grade</span><span class="mono">${esc(r.grade)}</span></div><div><span class="l">Lieu</span>${esc(r.station)}</div><div><span class="l">FTE</span><span class="mono">${r.fte}%</span></div><div><span class="l">Contrat</span>${esc(r.contract)}</div><div><span class="l">Occupation</span>${r.isNew?"–":r.occupied?"Occupé":"Vacant"}</div></div>`}
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${stChip(r.st)}${r.p?`<span class="src">Dernière modification : ${esc(r.p.updatedBy||"–")}, ${fmtDate(r.p.updatedAt)}</span>`:""}</div>
+      ${ro?`<div class="callout blue">${role()==="wr"?"Lecture seule : la WR décide dans l'encadré ci-dessous.":"Lecture seule : cette position relève d'une autre équipe."}</div>`:""}
       ${r.d?`<div class="callout ${r.d.decision==="valide"?"":"amber"}"><b>${r.d.decision==="valide"?"Validée":"Rejetée"}</b> par ${esc(r.d.decidedBy||"la WR")}, ${fmtDate(r.d.decidedAt)}${r.d.comment?` : « ${esc(r.d.comment)} »`:""}${r.st==="stale"?"<br>La proposition a changé depuis ; elle attend une nouvelle décision.":""}</div>`:""}
-      <div class="field"><label for="d-team">Équipe</label>${teamSelect("d-team",D.team,"Choisir l'équipe")}</div>
-      <div class="field"><span class="lab">Proposition pour 2028-2029</span><div class="seg" role="group" aria-label="Proposition">${acts.map(k=>`<button type="button" data-act="${k}" aria-pressed="${a===k}">${ACTIONS[k]}</button>`).join("")}</div>
+      <div class="field"><label for="d-team">Équipe</label>${teamSelect("d-team",D.team,"Choisir l'équipe",(ro||role()==="tl")?"disabled":"")}</div>
+      <div class="field"><span class="lab">Proposition pour 2028-2029</span><div class="seg" role="group" aria-label="Proposition">${acts.map(k=>`<button type="button" data-act="${k}" aria-pressed="${a===k}" ${dis}>${ACTIONS[k]}</button>`).join("")}</div>
         <span class="hint">${a==="maintenir"?"La position est reprise telle quelle.":a==="reconvertir"?"Changement d'intitulé, de grade, de lieu d'affectation ou de FTE.":a==="supprimer"?"La position ne sera pas chiffrée en 2028-2029.":a==="creer"?"Position qui n'existe pas au plan 2026-2027.":"Choisissez une option."}</span></div>
-      ${needsDetail?`<div class="field"><label for="d-title">Intitulé 2028-2029</label><input id="d-title" value="${esc(D.title)}"></div>
-        <div class="row2"><div class="field"><label for="d-grade">Grade</label><select id="d-grade"><option value="">Choisir</option>${GRADES.map(g=>`<option ${D.grade===g?"selected":""}>${g}</option>`).join("")}</select></div>
-        <div class="field"><label for="d-station">Lieu d'affectation</label><input id="d-station" list="stations" value="${esc(D.station)}"><datalist id="stations">${STATIONS.map(s=>`<option value="${s}">`).join("")}</datalist></div>
-        <div class="field"><label for="d-fte">FTE (%)</label><input id="d-fte" type="number" min="10" max="100" step="10" value="${D.fte}"></div></div>`:""}
-      ${needsOut?`<div class="field"><label for="d-seg">Segment budgétaire</label><select id="d-seg"><option value="">Choisir</option>${SEGMENTS.map(s=>`<option ${D.segment===s?"selected":""}>${esc(s)}</option>`).join("")}</select></div>
-      <div class="field"><span class="lab">Outputs GPW14 (1 à 3)</span>
-        ${D.outputs.map((o,i)=>`<div class="omap"><select data-oc="${i}" aria-label="Output ${i+1}">${outputOptions(o.code)}</select><input data-op="${i}" type="number" min="5" max="100" step="5" value="${o.pct}" aria-label="Part en %"><button class="xbtn" data-orm="${i}" aria-label="Retirer" ${D.outputs.length<2?"disabled":""}>×</button></div>`).join("")}
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">${D.outputs.length<3?`<button class="btn sm" data-oadd>+ Ajouter un output</button>`:"<span></span>"}<span class="small ${sum===100?"muted":"err"}">Total : <b class="mono">${sum} %</b>${sum===100?"":" (doit faire 100 %)"}</span></div>
-        <span class="hint">Entre crochets : priorité de l'output validée avec le ministère.</span></div>`:""}
-      ${a?`<div class="field"><label for="d-just">Justification ${a==="maintenir"?"(facultative)":""}</label><textarea id="d-just" placeholder="Pourquoi cette proposition ? Lien avec les priorités, charge de travail, financement attendu…">${esc(D.justification)}</textarea></div>`:""}
-      ${isEditorRole()&&r.p&&r.p.action?`<div class="wr-box"><span class="kicker">Décision de la WR</span><div class="field"><label for="d-wrc">Commentaire</label><input id="d-wrc" value="${esc(r.d?.comment||"")}"></div>
-        <div class="vrow-actions"><button class="btn ok ${r.st==="done"?"on":""}" data-ddec="valide">Valider</button><button class="btn no ${r.st==="rej"?"on":""}" data-ddec="rejete">Rejeter</button></div></div>`:""}
-      ${D.err?`<p class="err" role="alert">${esc(D.err)}</p>`:""}
-    </div>
-    <div class="df"><button class="btn primary" data-save>Enregistrer la proposition</button><button class="btn" data-close>Annuler</button>
-      ${r.isNew&&r.p?(D.confirmDel?`<span class="confirm">Supprimer cette nouvelle position ? <button class="btn sm no on" data-delyes>Oui, supprimer</button><button class="btn sm" data-delno>Non</button></span>`:`<button class="btn no" data-del style="margin-left:auto">Supprimer la proposition</button>`):""}</div>
-  </aside>`;
-  const first=$("#layer .seg button[aria-pressed='true']")||$("#layer .seg button"); first&&first.focus({preventScroll:true});
+      ${needsDetail?`<div class="field"><label for="d-title">Intitulé 2028-2029</label><input id="d-title" value="${esc(D.title)}" ${dis}></div>
+        <div class="row2"><div class="field"><label for="d-grade">Grade</label><select id="d-grade" ${dis}><option value="">Choisir</option>${GRADES.map(g=>`<option ${D.grade===g?"selected":""}>${g}</option>`).join("")}</select></div>
+        <div class="field"><label for="d-station">Lieu d'affectation</label><input id="d-station" list="stations" value="${esc(D.station)}" ${dis}><datalist id="stations">${STATIONS.map(s=>`<option value="${s}">`).join("")}</datalist></div>
+        <div class="field"><label for="d-fte">FTE (%)</label><input id="d-fte" type="number" min="10" max="100" step="10" value="${D.fte}" ${dis}></div></div>`:""}
+      ${needsOut?`<div class="field"><label for="d-seg">Segment budgétaire</label><select id="d-seg" ${dis}><option value="">Choisir</option>${SEGMENTS.map(s=>`<option ${D.segment===s?"selected":""}>${esc(s)}</option>`).join("")}</select></div>
+      <div class="field"><span class="lab">Outputs GPW14 (1 à 3)</span>${D.outputs.map((o,i)=>`<div class="omap"><select data-oc="${i}" aria-label="Output ${i+1}" ${dis}>${outputOptions(o.code)}</select><input data-op="${i}" type="number" min="5" max="100" step="5" value="${o.pct}" aria-label="Part en %" ${dis}><button class="xbtn" data-orm="${i}" aria-label="Retirer" ${D.outputs.length<2||ro?"disabled":""}>×</button></div>`).join("")}
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">${D.outputs.length<3&&!ro?`<button class="btn sm" data-oadd>+ Ajouter un output</button>`:"<span></span>"}<span class="small ${sum===100?"muted":"err"}">Total : <b class="mono">${sum} %</b>${sum===100?"":" (doit faire 100 %)"}</span></div><span class="hint">Entre crochets : priorité de l'output validée avec le ministère.</span></div>`:""}
+      ${a?`<div class="field"><label for="d-just">Justification ${a==="maintenir"?"(facultative)":""}</label><textarea id="d-just" ${dis} placeholder="Pourquoi cette proposition ? Lien avec les priorités, charge de travail, financement attendu…">${esc(D.justification)}</textarea></div>`:""}
+      ${isEditor()&&r.p&&r.p.action?`<div class="wr-box"><span class="kicker">Décision de la WR</span><div class="field"><label for="d-wrc">Commentaire</label><input id="d-wrc" value="${esc(r.d?.comment||"")}"></div><div class="vrow-actions"><button class="btn ok ${r.st==="done"?"on":""}" data-ddec="valide">Valider</button><button class="btn no ${r.st==="rej"?"on":""}" data-ddec="rejete">Rejeter</button></div></div>`:""}
+      ${D.err?`<p class="err" role="alert">${esc(D.err)}</p>`:""}</div>
+    <div class="df">${ro?`<button class="btn" data-close>Fermer</button>`:`<button class="btn primary" data-save ${D.saving?"disabled":""}>${D.saving?"Enregistrement…":"Enregistrer la proposition"}</button><button class="btn" data-close>Annuler</button>
+      ${r.isNew&&r.p?(D.confirmDel?`<span class="confirm">Supprimer cette nouvelle position ? <button class="btn sm no on" data-delyes>Oui, supprimer</button><button class="btn sm" data-delno>Non</button></span>`:`<button class="btn no" data-del style="margin-left:auto">Supprimer la proposition</button>`):""}`}</div></aside>`;
+  const first=$("#layer .seg button[aria-pressed='true']")||$("#layer .seg button"); first&&!first.disabled&&first.focus({preventScroll:true});
 }
 function readDraft(){ const D=S.draft; if(!D) return; const v=id=>{const e=$("#"+id); return e?e.value:null;};
-  if(v("d-team")!==null) D.team=v("d-team"); if(v("d-title")!==null) D.title=v("d-title"); if(v("d-grade")!==null) D.grade=v("d-grade");
-  if(v("d-station")!==null) D.station=v("d-station"); if(v("d-fte")!==null) D.fte=Number(v("d-fte")); if(v("d-seg")!==null) D.segment=v("d-seg"); if(v("d-just")!==null) D.justification=v("d-just");
+  if(v("d-team")!==null&&!$("#d-team").disabled) D.team=v("d-team"); if(v("d-title")!==null) D.title=v("d-title"); if(v("d-grade")!==null) D.grade=v("d-grade"); if(v("d-station")!==null) D.station=v("d-station"); if(v("d-fte")!==null) D.fte=Number(v("d-fte")); if(v("d-seg")!==null) D.segment=v("d-seg"); if(v("d-just")!==null) D.justification=v("d-just");
   document.querySelectorAll("#layer [data-oc]").forEach(s=>{ D.outputs[+s.dataset.oc].code=s.value; }); document.querySelectorAll("#layer [data-op]").forEach(s=>{ D.outputs[+s.dataset.op].pct=Number(s.value); }); }
-const currentRow=()=>rows().find(x=>x.id===S.openId)||(S.openId==="__new__"?newRow():null);
-function saveDraft(){
-  readDraft(); const D=S.draft, r=currentRow(); if(!r) return; const a=D.action, err=m=>{D.err=m; renderDrawer(r);};
+async function saveDraft(){
+  readDraft(); const D=S.draft, r=currentRow(); if(!r) return; const a=D.action, err=m=>{D.err=m; D.saving=false; renderDrawer(r);};
+  if(role()==="tl") D.team=S.me.team;
   if(!a) return err("Choisissez Maintenir, Reconvertir, Supprimer ou Créer."); if(!D.team) return err("Indiquez l'équipe.");
   if(a==="reconvertir"||a==="creer"){ if(!D.title.trim()) return err("Indiquez l'intitulé 2028-2029."); if(!D.grade) return err("Choisissez le grade."); if(!D.station.trim()) return err("Indiquez le lieu d'affectation."); if(!(D.fte>0&&D.fte<=100)) return err("Le FTE doit être compris entre 10 et 100 %."); }
-  let outs=[];
-  if(a!=="supprimer"){ if(!D.segment) return err("Choisissez le segment budgétaire."); outs=D.outputs.filter(o=>o.code).map(o=>({code:o.code,pct:Number(o.pct)||0}));
-    if(!outs.length) return err("Rattachez la position à au moins un output."); if(new Set(outs.map(o=>o.code)).size!==outs.length) return err("Chaque output ne peut apparaître qu'une fois.");
-    if(outs.reduce((s,o)=>s+o.pct,0)!==100) return err("La répartition entre outputs doit faire 100 %."); }
+  let outs=[]; if(a!=="supprimer"){ if(!D.segment) return err("Choisissez le segment budgétaire."); outs=D.outputs.filter(o=>o.code).map(o=>({code:o.code,pct:Number(o.pct)||0}));
+    if(!outs.length) return err("Rattachez la position à au moins un output."); if(new Set(outs.map(o=>o.code)).size!==outs.length) return err("Chaque output ne peut apparaître qu'une fois."); if(outs.reduce((s,o)=>s+o.pct,0)!==100) return err("La répartition entre outputs doit faire 100 %."); }
   if(a!=="maintenir"&&!D.justification.trim()) return err("Ajoutez une justification.");
   const id=r.id==="__new__"?"N-"+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,5).toUpperCase():r.id; const keep=a==="reconvertir"||a==="creer";
-  const doc={posId:id, isNew:!!r.isNew, action:a, team:D.team, title:keep?D.title.trim():r.title, grade:keep?D.grade:r.grade, station:keep?D.station.trim():r.station, fte:keep?D.fte:r.fte,
-    segment:a==="supprimer"?"":D.segment, outputs:outs, justification:D.justification.trim(), updatedAt:new Date().toISOString(), updatedBy:S.profile.name||roleLabel(S.profile.role)};
+  const row={pos_id:id, is_new:!!r.isNew, action:a, team:D.team, title:keep?D.title.trim():r.title, grade:keep?D.grade:r.grade, station:keep?D.station.trim():r.station, fte:keep?D.fte:r.fte, segment:a==="supprimer"?"":D.segment, outputs:outs, justification:D.justification.trim()};
   const prev=S.proposals[id];
-  if(prev&&JSON.stringify({...prev,updatedAt:0,updatedBy:0})===JSON.stringify({...doc,updatedAt:0,updatedBy:0})){ closeDrawer(); toast("Aucun changement"); return; }
-  S.proposals[id]=doc; persist(); closeDrawer(); render(); toast("Proposition enregistrée dans ce navigateur");
+  if(prev){ const same=["action","team","title","grade","station","fte","segment","justification"].every(k=>(prev[k]??"")===(row[k]??""))&&JSON.stringify(prev.outputs)===JSON.stringify(row.outputs); if(same){ S.openId=null; S.draft=null; $("#layer").innerHTML=""; toast("Aucun changement"); return; } }
+  D.saving=true; renderDrawer(r);
+  const {data,error}=await sb.from("proposals").upsert(row,{onConflict:"pos_id"}).select().single();
+  if(error) return err(errMsg(error));
+  S.proposals[id]=mapProp(data); S.openId=null; S.draft=null; $("#layer").innerHTML=""; render(); toast("Proposition enregistrée");
 }
-function decide(id,decision,comment){ const p=S.proposals[id]; if(!p) return;
-  S.decisions[id]={decision, comment:comment||"", basedOn:p.updatedAt, decidedAt:new Date().toISOString(), decidedBy:S.profile.name||roleLabel(S.profile.role)}; persist(); }
+async function decide(id,decision,comment){
+  const {data,error}=await sb.from("decisions").upsert({pos_id:id, decision, comment:comment||"", based_on:new Date().toISOString()},{onConflict:"pos_id"}).select().single();
+  if(error){ toast(errMsg(error)); return false; } S.decisions[id]=mapDec(data); return true;
+}
 
 /* ---------- events ---------- */
+function genPw(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"; const b=new Uint32Array(12); crypto.getRandomValues(b); return "Rdc-"+[...b].map(x=>a[x%a.length]).join(""); }
 function bindView(){
   const on=(id,ev,fn)=>{const e=$("#"+id); e&&e.addEventListener(ev,fn);};
-  on("btn-profile","click",()=>{ S.profile={...S.profile, role:""}; render(); });
-  on("p-save","click",()=>{ const role=($("#view .seg button[aria-pressed='true']")||{}).dataset?.role, name=$("#p-name").value.trim(), team=$("#p-team").value;
-    if(!role) return $("#p-err").textContent="Choisissez votre rôle."; if(!name) return $("#p-err").textContent="Indiquez votre nom : il signe vos saisies dans les fichiers."; if(role==="tl"&&!team) return $("#p-err").textContent="Choisissez votre équipe.";
-    S.profile={role,name,team:role==="tl"?team:""}; persistProfile(); if(role==="tl") S.f.team=team; setView(S.positions.length?"propositions":"fichiers"); });
+  on("btn-out","click",signOut); on("btn-retry","click",()=>{S.loading=true; render(); loadAll();});
+  on("login","submit",e=>{ e.preventDefault(); const em=$("#l-email").value, pw=$("#l-pw").value; if(!em||!pw){ S.authErr="Saisissez votre adresse et votre mot de passe."; render(); return; } signIn(em,pw); });
   on("f-team","change",e=>{S.f.team=e.target.value; render();}); on("f-status","change",e=>{S.f.status=e.target.value; render();});
   on("f-q","input",e=>{S.f.q=e.target.value; const pos=e.target.selectionStart; render(); const q=$("#f-q"); if(q){q.focus(); q.setSelectionRange(pos,pos);} });
-  on("btn-new","click",()=>openDrawer("__new__"));
-  on("v-team","change",e=>{S.vf.team=e.target.value; render();}); on("v-status","change",e=>{S.vf.status=e.target.value; render();});
-  on("btn-xlsx","click",exportFinal); on("x-team","click",()=>exportSchema("team")); on("x-all","click",()=>exportSchema("all"));
-  on("reset","click",()=>{S.confirmReset=true; render();}); on("reset-no","click",()=>{S.confirmReset=false; render();});
-  on("reset-yes","click",()=>{ S.positions=[]; S.proposals={}; S.decisions={}; S.files=[]; S.lastImport=null; S.confirmReset=false; try{localStorage.removeItem(STORE_KEY);}catch(e){} render(); toast("Données effacées"); });
-  on("file-in","change",e=>{ if(e.target.files.length) importFiles([...e.target.files]); });
-  const drop=$("#drop"); if(drop){ ["dragenter","dragover"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault(); drop.classList.add("over");})); ["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault(); drop.classList.remove("over");}));
-    drop.addEventListener("drop",e=>{ const f=[...(e.dataTransfer?.files||[])].filter(f=>/\.xlsx$/i.test(f.name)); if(f.length) importFiles(f); }); }
+  on("btn-new","click",()=>openDrawer("__new__")); on("v-team","change",e=>{S.vf.team=e.target.value; render();}); on("v-status","change",e=>{S.vf.status=e.target.value; render();});
+  on("btn-xlsx","click",exportFinal); on("btn-all","click",exportAll);
+  on("file-in","change",e=>{ if(e.target.files[0]) importBaseline(e.target.files[0]); }); on("bl-yes","click",confirmBaseline); on("bl-no","click",()=>{S.pendingBaseline=null; render();});
+  const drop=$("#drop"); if(drop){ ["dragenter","dragover"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault(); drop.classList.add("over");})); ["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault(); drop.classList.remove("over");})); drop.addEventListener("drop",e=>{ const f=[...(e.dataTransfer?.files||[])].find(f=>/\.xlsx$/i.test(f.name)); if(f) importBaseline(f); }); }
   on("btn-bulk","click",()=>{ const ids=[...document.querySelectorAll("[data-dec='valide']")].map(b=>b.dataset.id);
     $("#bulk-confirm").innerHTML=`<div class="confirm">Valider ${ids.length>1?`les ${ids.length} propositions affichées`:"la proposition affichée"} ? <button class="btn sm ok on" id="bulk-yes">Oui, valider</button><button class="btn sm" id="bulk-no">Non</button></div>`;
     $("#bulk-no").onclick=()=>$("#bulk-confirm").innerHTML="";
-    $("#bulk-yes").onclick=()=>{ ids.forEach(id=>decide(id,"valide",$("#c-"+CSS.escape(id))?.value||"")); render(); toast(`${ids.length} proposition${ids.length>1?"s":""} validée${ids.length>1?"s":""}`); }; });
+    $("#bulk-yes").onclick=async()=>{ $("#bulk-confirm").innerHTML=`<div class="callout blue">Validation en cours…</div>`; let ok=0; for(const id of ids){ if(await decide(id,"valide",$("#c-"+CSS.escape(id))?.value||"")) ok++; } render(); toast(`${ok} proposition${ok>1?"s":""} validée${ok>1?"s":""}`); }; });
+  on("m-role","change",e=>{ $("#m-team").disabled=e.target.value!=="tl"; });
+  on("m-add","click",async()=>{ const email=$("#m-email").value.trim().toLowerCase(), name=$("#m-name").value.trim(), r=$("#m-role").value, team=$("#m-team").value, er=$("#m-err");
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return er.textContent="Saisissez une adresse e-mail valide."; if(!name) return er.textContent="Saisissez le nom."; if(r==="tl"&&!team) return er.textContent="Choisissez l'équipe du Team Lead.";
+    const pw=genPw(); S.busy=true; render(); const {error}=await sb.rpc("admin_create_member",{p_email:email,p_name:name,p_role:r,p_team:r==="tl"?team:null,p_password:pw}); S.busy=false;
+    if(error){ render(); $("#m-err").textContent=errMsg(error); return; } await loadTable("members"); S.newPw={who:name+" ("+email+")",pw}; render(); });
+  on("copy-pw","click",async()=>{ try{ await navigator.clipboard.writeText(S.newPw.pw); toast("Mot de passe copié"); }catch(e){ toast("Copie impossible : sélectionnez le texte."); } });
+  document.querySelectorAll("[data-reset]").forEach(b=>b.addEventListener("click",async()=>{ const m=S.members.find(x=>x.user_id===b.dataset.reset); const pw=genPw(); const {error}=await sb.rpc("admin_reset_password",{p_user:m.user_id,p_password:pw}); if(error) return toast(errMsg(error)); S.newPw={who:m.name+" ("+m.email+")",pw}; render(); }));
+  document.querySelectorAll("[data-toggle]").forEach(b=>b.addEventListener("click",async()=>{ const m=S.members.find(x=>x.user_id===b.dataset.toggle); const {error}=await sb.from("members").update({active:!m.active}).eq("user_id",m.user_id); if(error) return toast(errMsg(error)); await loadTable("members"); render(); }));
+  on("pw-form","submit",async e=>{ e.preventDefault(); const a=$("#pw1").value, b=$("#pw2").value, er=$("#pw-err"); if(a.length<10) return er.textContent="10 caractères minimum."; if(a!==b) return er.textContent="Les deux saisies ne correspondent pas.";
+    const {error}=await sb.auth.updateUser({password:a}); if(error) return er.textContent=errMsg(error); $("#pw1").value=""; $("#pw2").value=""; toast("Mot de passe changé"); });
 }
-document.addEventListener("click",e=>{
-  const rb=e.target.closest("[data-role]"); if(rb){ document.querySelectorAll("[data-role]").forEach(b=>b.setAttribute("aria-pressed", b===rb)); return; }
+document.addEventListener("click",async e=>{
   const t=e.target.closest("[data-open],[data-dec],[data-close],[data-act],[data-oadd],[data-orm],[data-save],[data-del],[data-delyes],[data-delno],[data-ddec]"); if(!t) return;
   if(t.dataset.open!==undefined){ openDrawer(t.dataset.open); return; }
-  if(t.dataset.dec){ decide(t.dataset.id,t.dataset.dec,$("#c-"+CSS.escape(t.dataset.id))?.value||""); render(); toast(t.dataset.dec==="valide"?"Proposition validée":"Proposition rejetée"); return; }
+  if(t.dataset.dec){ t.disabled=true; if(await decide(t.dataset.id,t.dataset.dec,$("#c-"+CSS.escape(t.dataset.id))?.value||"")){ render(); toast(t.dataset.dec==="valide"?"Proposition validée":"Proposition rejetée"); } else t.disabled=false; return; }
   if(t.dataset.close!==undefined){ closeDrawer(); return; }
   const r=currentRow(); if(!S.draft||!r) return;
   if(t.dataset.act){ readDraft(); S.draft.action=t.dataset.act; S.draft.err=""; if(t.dataset.act==="reconvertir"&&!S.draft.title) S.draft.title=r.title; renderDrawer(r); }
@@ -784,14 +741,14 @@ document.addEventListener("click",e=>{
   else if(t.dataset.save!==undefined){ saveDraft(); }
   else if(t.dataset.del!==undefined){ readDraft(); S.draft.confirmDel=true; renderDrawer(r); }
   else if(t.dataset.delno!==undefined){ readDraft(); S.draft.confirmDel=false; renderDrawer(r); }
-  else if(t.dataset.delyes!==undefined){ delete S.proposals[r.id]; delete S.decisions[r.id]; persist(); closeDrawer(); render(); toast("Nouvelle position supprimée"); }
-  else if(t.dataset.ddec){ readDraft(); decide(r.id,t.dataset.ddec,$("#d-wrc")?.value||""); closeDrawer(); render(); toast(t.dataset.ddec==="valide"?"Proposition validée":"Proposition rejetée"); }
+  else if(t.dataset.delyes!==undefined){ const {error}=await sb.from("proposals").delete().eq("pos_id",r.id); if(error){ S.draft.err=errMsg(error); renderDrawer(r); return; } delete S.proposals[r.id]; delete S.decisions[r.id]; closeDrawer(); toast("Nouvelle position supprimée"); }
+  else if(t.dataset.ddec){ readDraft(); if(await decide(r.id,t.dataset.ddec,$("#d-wrc")?.value||"")){ closeDrawer(); toast(t.dataset.ddec==="valide"?"Proposition validée":"Proposition rejetée"); } }
 });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&S.openId) closeDrawer(); if(e.key==="Enter"&&e.target.matches("tr[data-open]")) openDrawer(e.target.dataset.open); });
 window.addEventListener("hashchange",()=>setView(location.hash.slice(1)));
-window.addEventListener("storage",e=>{ if(e.key===STORE_KEY){ load(); if(!S.openId) render(); } });
-load(); setView(location.hash.slice(1)||"apercu");
-setInterval(()=>{ if(!S.openId&&S.view==="apercu") render(); },60000);
+setView(location.hash.slice(1)||"apercu");
+setInterval(()=>{ if(!S.openId&&S.view==="apercu"&&S.me) render(); },60000);
+if(sb){ sb.auth.getSession().then(({data})=>afterSession(data.session)); sb.auth.onAuthStateChange((ev,session)=>{ if(ev==="SIGNED_OUT"){ S.me=null; render(); } }); } else { S.loading=false; render(); }
 
 </script>
 </body>

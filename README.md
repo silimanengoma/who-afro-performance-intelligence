@@ -26,12 +26,14 @@ Note: this page is public. Anyone with the link can read it.
 
 ## Plan RH 2028-2029 (OMS RDC)
 
-`planrh2028/index.html` is a standalone tool, published at
+`planrh2028/index.html` is published at
 https://silimanengoma.github.io/who-afro-performance-intelligence/planrh2028/
 
-It holds no data. Team Leads load the XLSX template sent by the PMO through
-internal email, record their position proposals for 2028-2029, and export a
-return file. The PMO consolidates the files, the WR validates or rejects each
-proposal, and the retained positions export to XLSX for SPM costing.
-Everything stays in the user's browser and files; nothing is sent to a server.
-Do not commit the workforce plan or any return file to this repository.
+Team Leads record position proposals for 2028-2029, the WR validates or
+rejects each one, and the PMO exports the retained positions to XLSX for SPM
+costing. Data is stored in the Supabase project `OMS-RDC-PlanRH-2028`
+(eu-central-1). Only accounts created by the PMO can sign in; row-level
+security limits Team Leads to their own team and decisions to the WR and PMO.
+The page embeds only the project's public (anon) key, which grants nothing
+without a signed-in account. The PMO loads the workforce plan once; it is then
+locked. Do not commit the workforce plan or any export to this repository.
