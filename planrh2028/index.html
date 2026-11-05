@@ -289,9 +289,10 @@ const TEAMS = {
   UHC:{label:"Systèmes de santé et CSU"},
   DPC:{label:"Lutte contre la maladie"},
   WHE:{label:"Urgences sanitaires (WHE)"},
+  POL:{label:"Éradication de la polio"},
   OPS:{label:"Opérations"}
 };
-const TEAM_ORDER = ["WRO","UHC","DPC","WHE","OPS"];
+const TEAM_ORDER = ["WRO","UHC","DPC","WHE","POL","OPS"];
 const OUTCOMES = {
  "01.001":"1.1 Systèmes résilients au climat","01.002":"1.2 Systèmes bas carbone","02.001":"2.1 Déterminants de la santé","02.002":"2.2 Facteurs de risque","02.003":"2.3 Promotion de la santé",
  "03.001":"3.1 Soins de santé primaires","03.002":"3.2 Personnels, financement, produits de santé","03.003":"3.3 Information sanitaire et numérique",
@@ -538,7 +539,7 @@ function vStart(){
 function vApercu(R){
   const c=k=>R.filter(r=>r.st===k).length; const total=R.length, done=c("done"), rej=c("rej"), wait=c("wait")+c("stale"), ns=c("ns"), news=R.filter(r=>r.isNew).length;
   const left=DEADLINE-Date.now(), days=Math.max(0,Math.floor(left/864e5)), hours=Math.max(0,Math.floor((left%864e5)/36e5)); const pct=n=>total?(n/total*100).toFixed(2)+"%":"0";
-  const bars=TEAM_ORDER.map(t=>{ const T=R.filter(r=>r.team===t), n=T.length; if(!n) return ""; const k=s=>T.filter(r=>r.st===s).length, w=s=>(k(s)/n*100).toFixed(2)+"%"; const prop=T.filter(r=>r.p&&r.p.action).length;
+  const bars=TEAM_ORDER.map(t=>{ const T=R.filter(r=>r.team===t), n=T.length; if(!n) return `<div class="brow"><span class="lab">${esc(TEAMS[t].label)}</span><span class="track"></span><span class="val">aucune position</span></div>`; const k=s=>T.filter(r=>r.st===s).length, w=s=>(k(s)/n*100).toFixed(2)+"%"; const prop=T.filter(r=>r.p&&r.p.action).length;
     return `<div class="brow"><span class="lab">${esc(TEAMS[t].label)}</span><span class="track" role="img" aria-label="${prop} propositions sur ${n}"><span style="width:${w("done")};background:var(--c-done)"></span><span style="width:${w("wait")};background:var(--c-wait)"></span><span style="width:${w("stale")};background:var(--c-stale)"></span><span style="width:${w("rej")};background:var(--c-rej)"></span></span><span class="val"><b>${prop}/${n}</b> proposées</span></div>`; }).join("");
   const cover={}; R.forEach(r=>{ if(r.p&&r.p.action&&r.p.action!=="supprimer"&&r.st!=="rej") (r.p.outputs||[]).forEach(o=>cover[o.code]=1); });
   const highGaps=OUTPUTS.filter(o=>o[2]==="H"&&o[0]<"07"&&!cover[o[0]]);
@@ -660,7 +661,7 @@ function renderDrawer(r){
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${stChip(r.st)}${r.p?`<span class="src">Dernière modification : ${esc(r.p.updatedBy||"–")}, ${fmtDate(r.p.updatedAt)}</span>`:""}</div>
       ${ro?`<div class="callout blue">${role()==="wr"?"Lecture seule : la WR décide dans l'encadré ci-dessous.":"Lecture seule : cette position relève d'une autre équipe."}</div>`:""}
       ${r.d?`<div class="callout ${r.d.decision==="valide"?"":"amber"}"><b>${r.d.decision==="valide"?"Validée":"Rejetée"}</b> par ${esc(r.d.decidedBy||"la WR")}, ${fmtDate(r.d.decidedAt)}${r.d.comment?` : « ${esc(r.d.comment)} »`:""}${r.st==="stale"?"<br>La proposition a changé depuis ; elle attend une nouvelle décision.":""}</div>`:""}
-      <div class="field"><label for="d-team">Équipe</label>${teamSelect("d-team",D.team,"Choisir l'équipe",(ro||role()==="tl")?"disabled":"")}</div>
+      <div class="field"><label for="d-team">Équipe</label><div class="filters">${teamSelect("d-team",D.team,"Choisir l'équipe",(ro||role()==="tl")?"disabled":"")}${role()==="pmo"&&r.id!=="__new__"?`<button class="btn sm" data-reassign>Réaffecter</button>`:""}</div>${role()==="pmo"&&r.id!=="__new__"?`<span class="hint">« Réaffecter » déplace tout de suite la position vers l'équipe choisie, sans modifier la proposition.</span>`:""}</div>
       <div class="field"><span class="lab">Proposition pour 2028-2029</span><div class="seg" role="group" aria-label="Proposition">${acts.map(k=>`<button type="button" data-act="${k}" aria-pressed="${a===k}" ${dis}>${ACTIONS[k]}</button>`).join("")}</div>
         <span class="hint">${a==="maintenir"?"La position est reprise telle quelle.":a==="reconvertir"?"Changement d'intitulé, de grade, de lieu d'affectation ou de FTE.":a==="supprimer"?"La position ne sera pas chiffrée en 2028-2029.":a==="creer"?"Position qui n'existe pas au plan 2026-2027.":"Choisissez une option."}</span></div>
       ${needsDetail?`<div class="field"><label for="d-title">Intitulé 2028-2029</label><input id="d-title" value="${esc(D.title)}" ${dis}></div>
@@ -730,7 +731,7 @@ function bindView(){
     const {error}=await sb.auth.updateUser({password:a}); if(error) return er.textContent=errMsg(error); $("#pw1").value=""; $("#pw2").value=""; toast("Mot de passe changé"); });
 }
 document.addEventListener("click",async e=>{
-  const t=e.target.closest("[data-open],[data-dec],[data-close],[data-act],[data-oadd],[data-orm],[data-save],[data-del],[data-delyes],[data-delno],[data-ddec]"); if(!t) return;
+  const t=e.target.closest("[data-open],[data-dec],[data-close],[data-act],[data-oadd],[data-orm],[data-save],[data-del],[data-delyes],[data-delno],[data-ddec],[data-reassign]"); if(!t) return;
   if(t.dataset.open!==undefined){ openDrawer(t.dataset.open); return; }
   if(t.dataset.dec){ t.disabled=true; if(await decide(t.dataset.id,t.dataset.dec,$("#c-"+CSS.escape(t.dataset.id))?.value||"")){ render(); toast(t.dataset.dec==="valide"?"Proposition validée":"Proposition rejetée"); } else t.disabled=false; return; }
   if(t.dataset.close!==undefined){ closeDrawer(); return; }
@@ -739,6 +740,9 @@ document.addEventListener("click",async e=>{
   else if(t.dataset.oadd!==undefined){ readDraft(); S.draft.outputs.push({code:"",pct:0}); renderDrawer(r); }
   else if(t.dataset.orm!==undefined){ readDraft(); S.draft.outputs.splice(+t.dataset.orm,1); renderDrawer(r); }
   else if(t.dataset.save!==undefined){ saveDraft(); }
+  else if(t.dataset.reassign!==undefined){ readDraft(); const team=$("#d-team").value; if(!team||team===r.team){ S.draft.err="Choisissez une autre équipe avant de réaffecter."; renderDrawer(r); return; }
+    const {error}=await sb.rpc("reassign_team",{p_pos:r.id,p_team:team}); if(error){ S.draft.err=errMsg(error); renderDrawer(r); return; }
+    await Promise.all(["positions","proposals"].map(loadTable)); S.draft.team=team; S.draft.err=""; renderDrawer(currentRow()); toast("Position réaffectée à l'équipe "+TEAMS[team].label); }
   else if(t.dataset.del!==undefined){ readDraft(); S.draft.confirmDel=true; renderDrawer(r); }
   else if(t.dataset.delno!==undefined){ readDraft(); S.draft.confirmDel=false; renderDrawer(r); }
   else if(t.dataset.delyes!==undefined){ const {error}=await sb.from("proposals").delete().eq("pos_id",r.id); if(error){ S.draft.err=errMsg(error); renderDrawer(r); return; } delete S.proposals[r.id]; delete S.decisions[r.id]; closeDrawer(); toast("Nouvelle position supprimée"); }
